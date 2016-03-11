@@ -1,9 +1,11 @@
 package com.nordman.big.myfellowcompass;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.TextView;
 
 import com.facebook.CallbackManager;
@@ -13,6 +15,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+
 
 public class MainActivity extends AppCompatActivity {
     private TextView info;
@@ -50,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
                 info.setText("Login attempt failed.");
             }
         });
+
+        new EndpointAsyncTask().execute(new Pair<Context, String>(this, "Manfred"));
     }
 
     @Override

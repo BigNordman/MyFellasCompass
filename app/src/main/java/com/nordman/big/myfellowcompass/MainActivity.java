@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        new EndpointAsyncTask().execute(new Pair<Context, String>(this, "Manfred"));
+        new EndpointAsyncTask().execute(new Pair<Context, String>(this, "BigNordman"));
     }
 
     @Override

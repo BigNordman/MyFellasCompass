@@ -216,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             long currentTime = new Date().getTime();
 
             if ((currentTime - lastUpdateBackendTime) > UPDATE_BACKEND_INTERVAL) {
-                Log.d("LOG","CurrentTime=" + currentTime + "  lastTime=" + lastUpdateBackendTime + "  diff=" + (currentTime - lastUpdateBackendTime));
                 Profile profile = Profile.getCurrentProfile();
                 GeoBean geo = new GeoBean();
 

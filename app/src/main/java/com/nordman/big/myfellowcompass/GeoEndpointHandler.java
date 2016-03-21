@@ -5,6 +5,8 @@ package com.nordman.big.myfellowcompass;
  *
  */
 public interface GeoEndpointHandler {
-    // Метод для "поднятия" бэкэнда
-    public void onWakeUp (String hello);
+    int WAKEUP_ERROR = 1;
+
+    void onGeoWakeUp(String hello); // Метод для "поднятия" бэкэнда
+    void onGeoError(int errorType, String errorMessage);
 }

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     boolean endpointAlive = false;
+    GeoEndpointManager geoMgr = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .build();
         }
 
+        if (geoMgr == null) {
+            Log.d("LOG","...создаем GeoEndpointManager");
+            geoMgr = new GeoEndpointManager(this);
+        }
+
     }
 
     @Override
@@ -107,45 +114,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-
-        new EndpointAsyncTask(this).execute("BigNordman");
-
-        // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(this);
+        geoMgr.wakeUp();
         updateUI();
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         profileTracker.stopTracking();
+        geoMgr.destroy();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         endpointAlive = false;
-
-        // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(this);
     }
 
     @Override
     protected void onStart() {
+        super.onStart();
+
         Log.d("LOG", "...onStart...");
         mGoogleApiClient.connect();
+        AppEventsLogger.activateApp(this);
 
-        super.onStart();
     }
 
     @Override
     protected void onStop() {
-        Log.d("LOG", "onStop...");
         super.onStop();
+
+        Log.d("LOG", "onStop...");
         if(mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+        AppEventsLogger.deactivateApp(this);
+
     }
 
 
@@ -187,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d("LOG", "...onConnectionFailed...");
     }
 
@@ -200,8 +205,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     @Override
-    public void onWakeUp(String hello) {
+    public void onGeoWakeUp(String hello) {
         endpointAlive = true;
         Toast.makeText(this, hello, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onGeoError(int errorType, String errorMessage) {
+        if (errorType==GeoEndpointHandler.WAKEUP_ERROR) {
+            endpointAlive = false;
+            Log.d("LOG",errorMessage);
+        }
     }
 }

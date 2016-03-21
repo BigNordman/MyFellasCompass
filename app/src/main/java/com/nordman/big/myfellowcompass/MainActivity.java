@@ -2,7 +2,6 @@ package com.nordman.big.myfellowcompass;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,8 +9,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -30,7 +29,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener,GeoEndpointHandler {
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 5;
 
@@ -38,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private ProfileTracker profileTracker;
     GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
+    boolean endpointAlive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .build();
         }
 
-
-        new EndpointAsyncTask().execute(new Pair<Context, String>(this, "BigNordman"));
     }
 
     @Override
@@ -109,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
+
+        new EndpointAsyncTask(this).execute("BigNordman");
 
         // Logs 'install' and 'app activate' App Events.
         AppEventsLogger.activateApp(this);
@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onPause() {
         super.onPause();
+        endpointAlive = false;
 
         // Logs 'app deactivate' App Event.
         AppEventsLogger.deactivateApp(this);
@@ -192,6 +193,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onLocationChanged(Location location) {
+        if (endpointAlive) {
+            Log.d("LOG", "...Endpoint Alive...");
+        }
         Log.d("LOG", "...onLocationChanged...");
+    }
+
+    @Override
+    public void onWakeUp(String hello) {
+        endpointAlive = true;
+        Toast.makeText(this, hello, Toast.LENGTH_LONG).show();
     }
 }

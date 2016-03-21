@@ -10,6 +10,7 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.GeoBeanApi;
+import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 
 import java.io.IOException;
 
@@ -17,13 +18,17 @@ import java.io.IOException;
  * Created by s_vershinin on 11.03.2016.
  * Асинхронная задача для общения с бэкэндом
  */
-public class EndpointAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+public class EndpointAsyncTask extends AsyncTask<String, Void, String> {
     private static GeoBeanApi geoApiService = null;
     private Context context;
 
+    public EndpointAsyncTask(Context context) {
+        this.context = context;
+    }
+
     @SafeVarargs
     @Override
-    protected final String doInBackground(Pair<Context, String>... params) {
+    protected final String doInBackground(String... params) {
         if(geoApiService == null) {  // Only do this once
             /*
             GeoBeanApi.Builder builder = new GeoBeanApi.Builder(AndroidHttp.newCompatibleTransport(),
@@ -48,8 +53,7 @@ public class EndpointAsyncTask extends AsyncTask<Pair<Context, String>, Void, St
             geoApiService = builder.build();
         }
 
-        context = params[0].first;
-        String name = params[0].second;
+        String name = params[0];
 
         try {
             //return geoApiService.sayHi(name).execute().getExtra();
@@ -61,6 +65,10 @@ public class EndpointAsyncTask extends AsyncTask<Pair<Context, String>, Void, St
 
     @Override
     protected void onPostExecute(String result) {
+        /*
+        ((MainActivity) context).endpointAlive = true;
         Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+        */
+        ((GeoEndpointHandler) context).onWakeUp(result);
     }
 }

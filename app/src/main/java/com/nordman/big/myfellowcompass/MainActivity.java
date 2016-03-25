@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     boolean endpointAlive = false;
-    GeoEndpointManager geoMgr = null;
+    GeoEndpointManager endpointMgr = null;
+    GeoGPSManager gpsMgr = null;
     long lastUpdateBackendTime = 0;
 
     @Override
@@ -106,11 +107,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .build();
         }
 
-        if (geoMgr == null) {
+        if (endpointMgr == null) {
             Log.d("LOG","...создаем GeoEndpointManager");
-            geoMgr = new GeoEndpointManager(this);
+            endpointMgr = new GeoEndpointManager(this);
         }
 
+        if (gpsMgr == null) {
+            Log.d("LOG","...создаем GeoGPSManager");
+            gpsMgr = new GeoGPSManager();
+        }
     }
 
     @Override
@@ -122,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        geoMgr.wakeUp();
+        endpointMgr.wakeUp();
         updateUI();
     }
 
@@ -137,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         AppEventsLogger.deactivateApp(this);
 
         profileTracker.stopTracking();
-        geoMgr.destroy();
+        endpointMgr.destroy();
     }
 
     @Override
@@ -167,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
     private void updateUI() {
-        TextView info = (TextView)findViewById(R.id.info);
+        TextView info = (TextView)findViewById(R.id.textInfo);
         Profile profile = Profile.getCurrentProfile();
 
         if (profile != null) {
@@ -175,6 +180,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         } else {
             info.setText(null);
         }
+
+        TextView gps = (TextView)findViewById(R.id.textGPS);
+        gps.setText("Distance = " + String.format("%.2f", gpsMgr.getDistance()) + " m"
+                + ", Time = " + String.valueOf(gpsMgr.getTime()) + " sec"
+                + ", Speed = " + String.format("%.2f", gpsMgr.getSpeed()) + " km/h"
+                + ", Bearing = " + String.format("%.0f", gpsMgr.getBearing()) + " degrees");
     }
 
     protected void createLocationRequest() {
@@ -222,10 +233,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 geo.setId(Long.valueOf(profile.getId()));
                 geo.setLat(location.getLatitude());
                 geo.setLon(location.getLongitude());
-                geoMgr.saveGeo(geo);
+                endpointMgr.saveGeo(geo);
 
                 lastUpdateBackendTime = currentTime;
             }
+
+            gpsMgr.setCurrentLocation(location);
+            updateUI();
 
         }
         Log.d("LOG", "...onLocationChanged...");
@@ -264,9 +278,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         geo.setId(Long.valueOf(profile.getId()));
         geo.setLat(100.001);
         geo.setLon(100.002);
-        geoMgr.saveGeo(geo);
+        endpointMgr.saveGeo(geo);
 
-        geoMgr.getGeo("1");
+        endpointMgr.getGeo("1");
         */
     }
 }

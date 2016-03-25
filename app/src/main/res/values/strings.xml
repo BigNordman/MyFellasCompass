@@ -4,5 +4,7 @@
     <string name="cancelled">Cancelled</string>
     <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
     <string name="ok">OK</string>
+    <string name="AccessFineLocationRequired">Access Fine Location Permission required.</string>
+    <string name="gps_diagnostics">Distance = %1$s m, Time = %2$s, Speed = %3$s km/h, Bearing = %4$s degrees</string>
 
 </resources>

@@ -2,10 +2,17 @@ package com.nordman.big.myfellowcompass;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
+
+import android.graphics.Color;
 import android.location.Location;
-import android.support.annotation.NonNull;
+import android.location.LocationManager;
+import android.location.Criteria;
+import android.location.LocationListener;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,37 +30,34 @@ import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 
 import java.util.Date;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener,GeoEndpointHandler {
-    public static final long UPDATE_LOCATION_INTERVAL = 10000;
-    public static final long FASTEST_UPDATE_LOCATION_INTERVAL = UPDATE_LOCATION_INTERVAL / 5;
+public class MainActivity extends AppCompatActivity implements GeoEndpointHandler {
     public static final long UPDATE_BACKEND_INTERVAL = 30000;
 
 
+    boolean endpointAlive = false;
+    long lastUpdateBackendTime = 0;
+    String gpsProvider;
+    String criticalErr = null;
+
     private CallbackManager callbackManager;
     private ProfileTracker profileTracker;
-    GoogleApiClient mGoogleApiClient;
-    LocationRequest mLocationRequest;
-    boolean endpointAlive = false;
-    GeoEndpointManager endpointMgr = null;
-    GeoGPSManager gpsMgr = null;
-    long lastUpdateBackendTime = 0;
+
+    private GeoEndpointManager endpointMgr = null;
+    private GeoGPSManager gpsMgr = null;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("LOG", "...onCreate...");
         super.onCreate(savedInstanceState);
 
+        /* facebook login */
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
@@ -93,30 +97,96 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                Log.d("LOG","...CurrentProfileChanged...");
+                Log.d("LOG", "...CurrentProfileChanged...");
                 updateUI();
             }
         };
 
-        if (mGoogleApiClient == null) {
-            Log.d("LOG","...создаем GooglAPIClient");
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-
+        /* endpoint manager */
         if (endpointMgr == null) {
-            Log.d("LOG","...создаем GeoEndpointManager");
+            Log.d("LOG", "...создаем GeoEndpointManager");
             endpointMgr = new GeoEndpointManager(this);
         }
 
+        /* gps manager */
         if (gpsMgr == null) {
-            Log.d("LOG","...создаем GeoGPSManager");
+            Log.d("LOG", "...создаем GeoGPSManager");
             gpsMgr = new GeoGPSManager();
         }
+
+        /* location manager */
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria crta = new Criteria();
+        crta.setAccuracy(Criteria.ACCURACY_FINE);
+        crta.setAltitudeRequired(false);
+        crta.setBearingRequired(false);
+        crta.setCostAllowed(true);
+        crta.setPowerRequirement(Criteria.POWER_LOW);
+        gpsProvider = locationManager.getBestProvider(crta, true);
+        Log.d("LOG","...Provider = " + gpsProvider + "...");
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            criticalErr = getString(R.string.AccessFineLocationRequired);
+            updateUI();
+        } else {
+            Location location = locationManager.getLastKnownLocation(gpsProvider);
+            updateWithNewLocation(location);
+
+            locationManager.requestLocationUpdates(gpsProvider, 1000, 0, locationListener);
+        }
     }
+
+    private final LocationListener locationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            updateWithNewLocation(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            criticalErr = "Provider " + provider + " disabled.";
+            updateUI();
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+    };
+
+    private void updateWithNewLocation(Location location) {
+        if (location != null) {
+            if (endpointAlive) {
+
+                // update backend not often than 30 second intervals
+                long currentTime = new Date().getTime();
+
+                if ((currentTime - lastUpdateBackendTime) > UPDATE_BACKEND_INTERVAL) {
+                    Profile profile = Profile.getCurrentProfile();
+                    GeoBean geo = new GeoBean();
+
+                    geo.setId(Long.valueOf(profile.getId()));
+                    geo.setLat(location.getLatitude());
+                    geo.setLon(location.getLongitude());
+                    endpointMgr.saveGeo(geo);
+
+                    lastUpdateBackendTime = currentTime;
+                }
+
+                gpsMgr.setCurrentLocation(location);
+                updateUI();
+
+            }
+            Log.d("LOG", "...onLocationChanged...");
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -136,19 +206,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.d("LOG", "...onDestroy...");
         super.onDestroy();
 
-        if(mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
         AppEventsLogger.deactivateApp(this);
 
         profileTracker.stopTracking();
         endpointMgr.destroy();
+
+        if (locationListener != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.removeUpdates(locationListener);
+        }
+        //locationListener
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //endpointAlive = false;
     }
 
     @Override
@@ -156,9 +230,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onStart();
 
         Log.d("LOG", "...onStart...");
-        if(!mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.connect();
-        }
         AppEventsLogger.activateApp(this);
 
     }
@@ -181,68 +252,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             info.setText(null);
         }
 
+        TextView textProvider = (TextView)findViewById(R.id.textGPSProvider);
+        textProvider.setText(gpsProvider);
+
         TextView gps = (TextView)findViewById(R.id.textGPS);
-        gps.setText("Distance = " + String.format("%.2f", gpsMgr.getDistance()) + " m"
-                + ", Time = " + String.valueOf(gpsMgr.getTime()) + " sec"
-                + ", Speed = " + String.format("%.2f", gpsMgr.getSpeed()) + " km/h"
-                + ", Bearing = " + String.format("%.0f", gpsMgr.getBearing()) + " degrees");
-    }
-
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_LOCATION_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_LOCATION_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        startLocationUpdates();
-    }
-
-    protected void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        if (criticalErr!=null) {
+            gps.setText(criticalErr);
+            gps.setTextColor(Color.RED);
+        } else {
+            gps.setText(getString(R.string.gps_diagnostics, String.format("%.2f", gpsMgr.getDistance()), String.valueOf(gpsMgr.getTime()), String.format("%.2f", gpsMgr.getSpeed()), String.format("%.0f", gpsMgr.getBearing())));
+            gps.setTextColor(Color.BLACK);
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        Log.d("LOG", "...onConnected...");
-        createLocationRequest();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d("LOG", "...onConnectionSuspended...");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d("LOG", "...onConnectionFailed...");
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if (endpointAlive) {
-
-            // update backend not often than 30 second intervals
-            long currentTime = new Date().getTime();
-
-            if ((currentTime - lastUpdateBackendTime) > UPDATE_BACKEND_INTERVAL) {
-                Profile profile = Profile.getCurrentProfile();
-                GeoBean geo = new GeoBean();
-
-                geo.setId(Long.valueOf(profile.getId()));
-                geo.setLat(location.getLatitude());
-                geo.setLon(location.getLongitude());
-                endpointMgr.saveGeo(geo);
-
-                lastUpdateBackendTime = currentTime;
-            }
-
-            gpsMgr.setCurrentLocation(location);
-            updateUI();
-
-        }
-        Log.d("LOG", "...onLocationChanged...");
     }
 
     @Override

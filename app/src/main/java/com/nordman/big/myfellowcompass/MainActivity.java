@@ -37,7 +37,7 @@ import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity implements GeoEndpointHandler {
-    public static final long UPDATE_BACKEND_INTERVAL = 30000;
+    public static final long UPDATE_BACKEND_INTERVAL = 15000;
 
 
     boolean endpointAlive = false;
@@ -176,11 +176,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                     geo.setLon(location.getLongitude());
                     endpointMgr.saveGeo(geo);
 
+                    gpsMgr.setCurrentLocation(location);
+                    updateUI();
+
                     lastUpdateBackendTime = currentTime;
                 }
-
-                gpsMgr.setCurrentLocation(location);
-                updateUI();
 
             }
             Log.d("LOG", "...onLocationChanged...");

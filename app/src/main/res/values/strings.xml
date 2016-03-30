@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Fellow Compass</string>
+    <string name="app_name">My Fellas Compass</string>
     <string name="facebook_app_id">1719838634939657</string>
     <string name="cancelled">Cancelled</string>
     <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>

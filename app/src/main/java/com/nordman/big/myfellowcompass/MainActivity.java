@@ -31,6 +31,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
+import com.facebook.login.widget.ProfilePictureView;
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 
 import java.util.Date;
@@ -39,6 +40,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements GeoEndpointHandler {
     public static final long UPDATE_BACKEND_INTERVAL = 15000;
 
+    private ProfilePictureView profilePictureView;
 
     boolean endpointAlive = false;
     long lastUpdateBackendTime = 0;
@@ -135,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
             locationManager.requestLocationUpdates(gpsProvider, 1000, 0, locationListener);
         }
+
+        profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
     }
 
     private final LocationListener locationListener = new LocationListener() {
@@ -248,8 +252,10 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         if (profile != null) {
             info.setText(String.valueOf(profile.getId()) + ": " + profile.getFirstName());
+            profilePictureView.setProfileId(profile.getId());
         } else {
             info.setText(null);
+            profilePictureView.setProfileId(null);
         }
 
         TextView textProvider = (TextView)findViewById(R.id.textGPSProvider);

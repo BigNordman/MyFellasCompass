@@ -1,6 +1,15 @@
 package com.nordman.big.myfellowcompass;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -9,8 +18,58 @@ import java.util.Date;
  *
  */
 public class GeoGPSManager {
+    private Context context;
+    private LocationManager locationManager;
+    private String gpsProvider;
     private TimeLocation prevTimeLoc = null;
     private TimeLocation curTimeLoc = null;
+
+    public GeoGPSManager(Context context) {
+        this.context = context;
+
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria crta = new Criteria();
+        crta.setAccuracy(Criteria.ACCURACY_FINE);
+        crta.setAltitudeRequired(false);
+        crta.setBearingRequired(false);
+        crta.setCostAllowed(true);
+        crta.setPowerRequirement(Criteria.POWER_LOW);
+        gpsProvider = locationManager.getBestProvider(crta, true);
+        Log.d("LOG", "...GPSProvider = " + gpsProvider + "...");
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ((GeoGPSHandler) context).onGPSError(GeoGPSHandler.PERMISSION_ERROR, context.getString(R.string.access_fine_location_required));
+        } else {
+            Location location = locationManager.getLastKnownLocation(gpsProvider);
+            ((GeoGPSHandler) context).onGPSLocationChanged(location);
+
+            locationManager.requestLocationUpdates(gpsProvider, 1000, 0, locationListener);
+        }
+
+    }
+
+    private final LocationListener locationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            ((GeoGPSHandler) context).onGPSLocationChanged(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            ((GeoGPSHandler) context).onGPSError(GeoGPSHandler.PROVIDER_DISABLED_ERROR, context.getString(R.string.gps_provider_disabled, provider));
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+    };
 
     class TimeLocation {
         public long time;
@@ -58,4 +117,17 @@ public class GeoGPSManager {
         return 0;
     }
 
+    public String getGPSProvider(){
+        return gpsProvider;
+    }
+
+    public void stopLocating(){
+        if (locationListener != null) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.removeUpdates(locationListener);
+        }
+
+    }
 }

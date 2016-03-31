@@ -11,8 +11,8 @@ public interface GeoEndpointHandler {
     int INSERT_ERROR = 2;
     int GET_ERROR = 3;
 
-    void onGeoWakeUp(String hello); // Метод для "поднятия" бэкэнда
-    void onGeoInsert(GeoBean geoBean);
-    void onGeoGet(GeoBean geoBean);
-    void onGeoError(int errorType, String errorMessage);
+    void onGeoEndpointWakeUp(String hello); // Метод для "поднятия" бэкэнда
+    void onGeoEndpointInsert(GeoBean geoBean);
+    void onGeoEndpointGet(GeoBean geoBean);
+    void onGeoEndpointError(int errorType, String errorMessage);
 }

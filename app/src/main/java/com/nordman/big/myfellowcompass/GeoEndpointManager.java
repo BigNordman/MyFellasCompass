@@ -3,7 +3,6 @@ package com.nordman.big.myfellowcompass;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.facebook.appevents.AppEventsLogger;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.GeoBeanApi;
@@ -45,9 +44,9 @@ public class GeoEndpointManager {
             @Override
             protected void onPostExecute(String result) {
                 if (result==null) {
-                    ((GeoEndpointHandler) context).onGeoError(GeoEndpointHandler.WAKEUP_ERROR, errorMessage);
+                    ((GeoEndpointHandler) context).onGeoEndpointError(GeoEndpointHandler.WAKEUP_ERROR, errorMessage);
                 } else {
-                    ((GeoEndpointHandler) context).onGeoWakeUp(result);
+                    ((GeoEndpointHandler) context).onGeoEndpointWakeUp(result);
                 }
             }
 
@@ -77,9 +76,9 @@ public class GeoEndpointManager {
             @Override
             protected void onPostExecute(GeoBean geoBean) {
                 if (geoBean==null) {
-                    ((GeoEndpointHandler) context).onGeoError(GeoEndpointHandler.INSERT_ERROR, errorMessage);
+                    ((GeoEndpointHandler) context).onGeoEndpointError(GeoEndpointHandler.INSERT_ERROR, errorMessage);
                 } else {
-                    ((GeoEndpointHandler) context).onGeoInsert(geoBean);
+                    ((GeoEndpointHandler) context).onGeoEndpointInsert(geoBean);
                 }
             }
         }
@@ -105,9 +104,9 @@ public class GeoEndpointManager {
             @Override
             protected void onPostExecute(GeoBean result) {
                 if (result==null) {
-                    ((GeoEndpointHandler) context).onGeoError(GeoEndpointHandler.GET_ERROR, errorMessage);
+                    ((GeoEndpointHandler) context).onGeoEndpointError(GeoEndpointHandler.GET_ERROR, errorMessage);
                 } else {
-                    ((GeoEndpointHandler) context).onGeoGet(result);
+                    ((GeoEndpointHandler) context).onGeoEndpointGet(result);
                 }
             }
 

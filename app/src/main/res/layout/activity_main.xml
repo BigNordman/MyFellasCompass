@@ -71,6 +71,31 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+        <ImageView
+            android:id="@+id/imageViewPerson"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:src="@drawable/mystman_inner"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            />
+        <ImageView
+            android:id="@+id/imageViewTriangle"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:src="@drawable/triangle"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            />
+        <ImageView
+            android:id="@+id/imageViewCompass"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:src="@drawable/compass"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -79,7 +104,7 @@
         android:onClick="trySomething"
         android:layout_above="@+id/login_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="56dp" />
+        android:layout_marginBottom="8dp" />
 
 
     <com.facebook.login.widget.LoginButton
@@ -89,5 +114,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
     </RelativeLayout>
 </LinearLayout>

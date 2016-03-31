@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">My Fellas Compass</string>
     <string name="facebook_app_id">1719838634939657</string>
+    <string name="facebook_user_info">%1$s : %2$s</string>
     <string name="cancelled">Cancelled</string>
     <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
     <string name="ok">OK</string>
-    <string name="AccessFineLocationRequired">Access Fine Location Permission required.</string>
+    <string name="access_fine_location_required">Access Fine Location Permission required.</string>
     <string name="gps_diagnostics">Distance = %1$s m, Time = %2$s, Speed = %3$s km/h, Bearing = %4$s degrees</string>
+    <string name="gps_provider_disabled">Provider %1$s disabled."</string>
 
 </resources>

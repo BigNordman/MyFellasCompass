@@ -1,23 +1,16 @@
 package com.nordman.big.myfellowcompass;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-
 
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationManager;
-import android.location.Criteria;
-import android.location.LocationListener;
 
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +30,7 @@ import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 import java.util.Date;
 
 
-public class MainActivity extends AppCompatActivity implements GeoEndpointHandler {
+public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler {
     public static final long UPDATE_BACKEND_INTERVAL = 15000;
 
     private ProfilePictureView profilePictureView;
@@ -52,12 +45,15 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     private GeoEndpointManager endpointMgr = null;
     private GeoGPSManager gpsMgr = null;
-    private LocationManager locationManager;
+    private MagnetSensorManager magnetManager;
+
+    private ImageView imagePerson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("LOG", "...onCreate...");
         super.onCreate(savedInstanceState);
+
 
         /* facebook login */
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -106,63 +102,37 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         /* endpoint manager */
         if (endpointMgr == null) {
-            Log.d("LOG", "...создаем GeoEndpointManager");
             endpointMgr = new GeoEndpointManager(this);
+            Log.d("LOG", "...GeoEndpointManager created...");
         }
 
         /* gps manager */
         if (gpsMgr == null) {
-            Log.d("LOG", "...создаем GeoGPSManager");
-            gpsMgr = new GeoGPSManager();
+            gpsMgr = new GeoGPSManager(this);
+            Log.d("LOG", "...GeoGPSManager created...");
         }
 
-        /* location manager */
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        Criteria crta = new Criteria();
-        crta.setAccuracy(Criteria.ACCURACY_FINE);
-        crta.setAltitudeRequired(false);
-        crta.setBearingRequired(false);
-        crta.setCostAllowed(true);
-        crta.setPowerRequirement(Criteria.POWER_LOW);
-        gpsProvider = locationManager.getBestProvider(crta, true);
-        Log.d("LOG","...Provider = " + gpsProvider + "...");
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            criticalErr = getString(R.string.AccessFineLocationRequired);
-            updateUI();
-        } else {
-            Location location = locationManager.getLastKnownLocation(gpsProvider);
-            updateWithNewLocation(location);
-
-            locationManager.requestLocationUpdates(gpsProvider, 1000, 0, locationListener);
-        }
-
+        /* profile picture view*/
         profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
+
+        /* another person picture*/
+        imagePerson = (ImageView) findViewById(R.id.imageViewPerson);
+
+        imagePerson.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "TODO: select person", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        /* magnet manager */
+        if (magnetManager == null) {
+            Log.d("LOG", "...создаем MagnetSensorManager");
+            magnetManager = new MagnetSensorManager(this);
+        }
+
     }
-
-    private final LocationListener locationListener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            updateWithNewLocation(location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            criticalErr = "Provider " + provider + " disabled.";
-            updateUI();
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-    };
 
     private void updateWithNewLocation(Location location) {
         if (location != null) {
@@ -173,13 +143,14 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
                 if ((currentTime - lastUpdateBackendTime) > UPDATE_BACKEND_INTERVAL) {
                     Profile profile = Profile.getCurrentProfile();
-                    GeoBean geo = new GeoBean();
+                    if (profile != null) {
+                        GeoBean geo = new GeoBean();
 
-                    geo.setId(Long.valueOf(profile.getId()));
-                    geo.setLat(location.getLatitude());
-                    geo.setLon(location.getLongitude());
-                    endpointMgr.saveGeo(geo);
-
+                        geo.setId(Long.valueOf(profile.getId()));
+                        geo.setLat(location.getLatitude());
+                        geo.setLon(location.getLongitude());
+                        endpointMgr.saveGeo(geo);
+                    }
                     gpsMgr.setCurrentLocation(location);
                     updateUI();
 
@@ -202,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     protected void onResume() {
         super.onResume();
         endpointMgr.wakeUp();
+        magnetManager.startSensor();
+
         updateUI();
     }
 
@@ -214,19 +187,14 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         profileTracker.stopTracking();
         endpointMgr.destroy();
-
-        if (locationListener != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            locationManager.removeUpdates(locationListener);
-        }
-        //locationListener
+        gpsMgr.stopLocating();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        // to stop the listener and save battery
+        magnetManager.stopSensor();
     }
 
     @Override
@@ -242,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     protected void onStop() {
         super.onStop();
 
-        Log.d("LOG", "onStop...");
+        Log.d("LOG", "...onStop...");
     }
 
 
@@ -251,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         Profile profile = Profile.getCurrentProfile();
 
         if (profile != null) {
-            info.setText(String.valueOf(profile.getId()) + ": " + profile.getFirstName());
+            info.setText(getString(R.string.facebook_user_info, String.valueOf(profile.getId()), profile.getFirstName()));
             profilePictureView.setProfileId(profile.getId());
         } else {
             info.setText(null);
@@ -259,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         }
 
         TextView textProvider = (TextView)findViewById(R.id.textGPSProvider);
-        textProvider.setText(gpsProvider);
+        textProvider.setText(gpsMgr.getGPSProvider());
 
         TextView gps = (TextView)findViewById(R.id.textGPS);
         if (criticalErr!=null) {
@@ -272,28 +240,39 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     }
 
     @Override
-    public void onGeoWakeUp(String hello) {
+    public void onGeoEndpointWakeUp(String hello) {
         endpointAlive = true;
         Toast.makeText(this, hello, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void onGeoInsert(GeoBean geoBean) {
+    public void onGeoEndpointInsert(GeoBean geoBean) {
         Log.d("LOG", "geoBean saved: " + geoBean.toString());
     }
 
     @Override
-    public void onGeoGet(GeoBean geoBean) {
+    public void onGeoEndpointGet(GeoBean geoBean) {
         Log.d("LOG", "geoBean: " + geoBean.toString());
     }
 
     @Override
-    public void onGeoError(int errorType, String errorMessage) {
+    public void onGeoEndpointError(int errorType, String errorMessage) {
         if (errorType==GeoEndpointHandler.WAKEUP_ERROR) {
             endpointAlive = false;
         }
-        Log.d("LOG",errorMessage);
+        criticalErr = errorMessage;
+        updateUI();
+    }
 
+    @Override
+    public void onGPSError(int errorType, String errorMessage) {
+        criticalErr = errorMessage;
+        updateUI();
+    }
+
+    @Override
+    public void onGPSLocationChanged(Location location) {
+        updateWithNewLocation(location);
     }
 
     public void trySomething(View view) {
@@ -309,4 +288,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         endpointMgr.getGeo("1");
         */
     }
+
+
 }

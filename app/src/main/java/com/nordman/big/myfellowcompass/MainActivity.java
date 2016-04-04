@@ -326,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         }
     });
 
-
     public void trySomething(View view) {
         /*
         Profile profile = Profile.getCurrentProfile();

@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.view.animation.RotateAnimation;
 
 import java.math.BigDecimal;
 
@@ -79,6 +80,31 @@ public class MagnetSensorManager implements SensorEventListener {
 
     public float getAzimuthDegree(){
         return mAzimuthDegree;
+    }
+
+    public float[] getRotateDegrees() {
+        float[] result;
+        result = new float[2];
+
+        if (Math.abs(mCurrentDegree - mAzimuthDegree)>320) {
+            if (Math.abs(mCurrentDegree)>Math.abs(mAzimuthDegree)) {
+                // c 360 до 0
+                result[0] = mCurrentDegree;
+                result[1] = -360;
+                mCurrentDegree = 0;
+            } else {
+                // c 0 на 360
+                result[0] = mCurrentDegree;
+                result[1] = 0;
+                mCurrentDegree = -360;
+            }
+        } else {
+            result[0] = mCurrentDegree;
+            result[1] = mAzimuthDegree;
+            mCurrentDegree = mAzimuthDegree;
+        }
+
+        return result;
     }
 
 }

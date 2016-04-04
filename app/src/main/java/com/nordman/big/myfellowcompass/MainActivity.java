@@ -6,10 +6,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,10 +32,13 @@ import com.facebook.login.widget.ProfilePictureView;
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler {
     public static final long UPDATE_BACKEND_INTERVAL = 15000;
+    public static final long TICK_INTERVAL = 2000;
 
     private ProfilePictureView profilePictureView;
 
@@ -46,8 +53,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     private GeoEndpointManager endpointMgr = null;
     private GeoGPSManager gpsMgr = null;
     private MagnetSensorManager magnetManager;
+    Timer compassTick = null; // Таймер, использующийся в MainActivity для плавной анимации компаса
 
     private ImageView imagePerson;
+    private ImageView imageCompass;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             magnetManager = new MagnetSensorManager(this);
         }
 
+        imageCompass = (ImageView) findViewById(R.id.imageViewCompass);
+
     }
 
     private void updateWithNewLocation(Location location) {
@@ -175,6 +187,13 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         endpointMgr.wakeUp();
         magnetManager.startSensor();
 
+        // создаем таймер если еще не создан
+        if (compassTick ==null){
+            compassTick = new Timer();
+            compassTick.schedule(new UpdateCompassTickTask(), 0, TICK_INTERVAL); //тикаем каждую секунду
+        }
+
+
         updateUI();
     }
 
@@ -195,6 +214,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         super.onPause();
         // to stop the listener and save battery
         magnetManager.stopSensor();
+        if (compassTick !=null) {
+            compassTick.cancel();
+            compassTick = null;
+        }
+
     }
 
     @Override
@@ -274,6 +298,33 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     public void onGPSLocationChanged(Location location) {
         updateWithNewLocation(location);
     }
+
+
+    private class UpdateCompassTickTask extends TimerTask {
+        public void run() {
+            compassTickHandler.sendEmptyMessage(0);
+        }
+    }
+
+    final Handler compassTickHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            RotateAnimation ra;
+            float[] degrees = magnetManager.getRotateDegrees();
+            ra = new RotateAnimation(
+                    degrees[0],
+                    degrees[1],
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+
+            ra.setDuration(TICK_INTERVAL);
+            ra.setFillAfter(true);
+            imageCompass.startAnimation(ra);
+
+            return false;
+        }
+    });
 
     public void trySomething(View view) {
         /*

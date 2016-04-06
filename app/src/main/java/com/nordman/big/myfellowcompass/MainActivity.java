@@ -133,9 +133,12 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
             @Override
             public void onClick(View v) {
+                /*
                 Intent intent = new Intent(MainActivity.this, SelectPersonActivity.class);
                 MainActivity.this.startActivityForResult(intent, 1);
-
+                */
+                Intent intent = new Intent(MainActivity.this, SelectPersonActivity.class);
+                MainActivity.this.startActivityForResult(intent, 1);
             }
         });
 

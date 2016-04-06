@@ -25,6 +25,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
@@ -132,7 +133,9 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "TODO: select person", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, SelectPersonActivity.class);
+                MainActivity.this.startActivityForResult(intent, 1);
+
             }
         });
 
@@ -178,7 +181,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        // check on facebook requestCode
+        if (requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()) {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override

@@ -8,5 +8,6 @@
     <string name="access_fine_location_required">Access Fine Location Permission required.</string>
     <string name="gps_diagnostics">Distance = %1$s m, Time = %2$s, Speed = %3$s km/h, Bearing = %4$s degrees</string>
     <string name="gps_provider_disabled">Provider %1$s disabled."</string>
+    <string name="select_person">Select Person</string>
 
 </resources>

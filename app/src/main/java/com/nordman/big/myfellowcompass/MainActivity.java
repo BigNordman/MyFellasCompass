@@ -18,10 +18,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphRequestAsyncTask;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
@@ -29,8 +34,12 @@ import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
+import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.Date;
 import java.util.Timer;
@@ -45,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     boolean endpointAlive = false;
     long lastUpdateBackendTime = 0;
-    String gpsProvider;
     String criticalErr = null;
 
     private CallbackManager callbackManager;
@@ -103,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         setContentView(R.layout.activity_main);
 
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("user_friends");
+
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
@@ -137,8 +148,26 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                 Intent intent = new Intent(MainActivity.this, SelectPersonActivity.class);
                 MainActivity.this.startActivityForResult(intent, 1);
                 */
-                Intent intent = new Intent(MainActivity.this, SelectPersonActivity.class);
-                MainActivity.this.startActivityForResult(intent, 1);
+                GraphRequestAsyncTask graphRequestAsyncTask = new GraphRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        //AccessToken.getCurrentAccessToken(),
+                        "/me/friends",
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                Intent intent = new Intent(MainActivity.this, SelectPersonActivity.class);
+                                try {
+                                    JSONArray rawName = response.getJSONObject().getJSONArray("data");
+                                    intent.putExtra("jsondata", rawName.toString());
+                                    //startActivity(intent);
+                                    startActivityForResult(intent, 1);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                ).executeAsync();
             }
         });
 

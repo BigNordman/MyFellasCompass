@@ -36,7 +36,8 @@ public class SelectPersonActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.activity_listview, friends); // simple textview for list item
+        ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.activity_listview, R.id.label, friends); // simple textview for list item
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.rowlayout, R.id.label, values);
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
 

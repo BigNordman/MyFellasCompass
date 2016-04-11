@@ -1,10 +1,11 @@
 package com.nordman.big.myfellowcompass;
 
+
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +27,10 @@ public class SelectPersonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_person);
+
         ActionBar bar=getSupportActionBar();
         if (bar!=null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         Intent intent = getIntent();
         String jsondata = intent.getStringExtra("jsondata");
@@ -47,7 +50,7 @@ public class SelectPersonActivity extends AppCompatActivity {
         }
 
         ArrayAdapter adapter = new fbArrayAdapter(this, R.layout.activity_listview, R.id.label, friends, friendsStr); // simple textview for list item
-        ListView listView = (ListView) findViewById(R.id.listView);
+        ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
 
     }

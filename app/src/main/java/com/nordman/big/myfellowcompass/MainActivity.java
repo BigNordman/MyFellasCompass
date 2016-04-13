@@ -64,8 +64,10 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     private MagnetSensorManager magnetManager;
     Timer compassTick = null; // Таймер, использующийся в MainActivity для плавной анимации компаса
 
-    private ImageView imagePerson;
+    private ProfilePictureView personPictureView;
     private ImageView imageCompass;
+
+    private String personId;
 
 
     @Override
@@ -138,9 +140,9 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
 
         /* another person picture*/
-        imagePerson = (ImageView) findViewById(R.id.imageViewPerson);
+        personPictureView = (ProfilePictureView) findViewById(R.id.personPicture);
 
-        imagePerson.setOnClickListener(new View.OnClickListener() {
+        personPictureView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -209,10 +211,21 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         }
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // check on SelectPerson result
+        if (requestCode==1) {
+            if (data == null) {
+                personId = null;
+                Log.d("LOG", "...personId = null");
+            } else {
+                personId = data.getStringExtra("id");
+                Log.d("LOG", "...personId = " + personId);
+            }
+            updateUI();
+        }
 
         // check on facebook requestCode
         if (requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()) {
@@ -300,6 +313,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             gps.setText(getString(R.string.gps_diagnostics, String.format("%.2f", gpsMgr.getDistance()), String.valueOf(gpsMgr.getTime()), String.format("%.2f", gpsMgr.getSpeed()), String.format("%.0f", gpsMgr.getBearing())));
             gps.setTextColor(Color.BLACK);
         }
+
+        personPictureView.setProfileId(personId);
     }
 
     @Override

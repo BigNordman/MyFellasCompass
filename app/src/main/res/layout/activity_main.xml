@@ -72,14 +72,14 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-        <ImageView
-            android:id="@+id/imageViewPerson"
+        <com.facebook.login.widget.ProfilePictureView
+            android:id="@+id/personPicture"
             android:layout_width="85dp"
             android:layout_height="85dp"
-            android:src="@drawable/mystman_inner"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            />
+            facebook:com_facebook_preset_size="large" />
+
         <ImageView
             android:id="@+id/imageViewTriangle"
             android:layout_width="400dp"
@@ -114,7 +114,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:layout_marginBottom="8dp"/>
 
     </RelativeLayout>
 </LinearLayout>

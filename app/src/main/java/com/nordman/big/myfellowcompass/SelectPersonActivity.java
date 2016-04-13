@@ -1,14 +1,17 @@
 package com.nordman.big.myfellowcompass;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,58 +39,77 @@ public class SelectPersonActivity extends AppCompatActivity {
         String jsondata = intent.getStringExtra("jsondata");
 
         JSONArray friendslist;
-        ArrayList<String> friendsStr = new ArrayList<>();
-        ArrayList<fbRow> friends = new ArrayList<>();
+        ArrayList<FbRowItem> friends = new ArrayList<>();
 
         try {
             friendslist = new JSONArray(jsondata);
             for (int l=0; l < friendslist.length(); l++) {
-                friendsStr.add(friendslist.getJSONObject(l).getString("name"));
-                friends.add(new fbRow(friendslist.getJSONObject(l).getString("id"), friendslist.getJSONObject(l).getString("name")));
+                friends.add(new FbRowItem(friendslist.getJSONObject(l).getString("id"), friendslist.getJSONObject(l).getString("name")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ArrayAdapter adapter = new fbArrayAdapter(this, R.layout.activity_listview, R.id.label, friends, friendsStr); // simple textview for list item
+        MyAdapter adapter = new MyAdapter(this, R.layout.activity_listview, friends);
+
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
+        //listView.setSelector(R.drawable.listview_selector);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent();
+                intent.putExtra("id", ((FbRowItem)parent.getItemAtPosition(position)).id);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
     }
 
-    public class fbArrayAdapter extends ArrayAdapter<String> {
-        private final Context context;
-        private final List<fbRow> fbRows;
-
-
-        public fbArrayAdapter(Context context, int resource, int textViewResourceId, List<fbRow> objects, List<String> strings) {
-            super(context, resource, textViewResourceId, strings);
-            this.context = context;
-            this.fbRows = objects;
-        }
-
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View rowView = inflater.inflate(R.layout.activity_listview, parent, false);
-            TextView textView = (TextView) rowView.findViewById(R.id.label);
-            textView.setText(fbRows.get(position).name);
-            ProfilePictureView profilePictureView = (ProfilePictureView) rowView.findViewById(R.id.profilePicture);
-            profilePictureView.setProfileId(fbRows.get(position).id);
-
-            return rowView;
-        }
+    public void finish(View view) {
+        finish();
     }
 
-    public class fbRow {
+    public class FbRowItem {
         public String id;
         public String name;
 
-        public fbRow(String id, String name) {
+        public FbRowItem(String id, String name) {
             this.id = id;
             this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    public class MyAdapter extends ArrayAdapter<FbRowItem> {
+        private Context context;
+        private int resource;
+        private List<FbRowItem> objects;
+
+        public MyAdapter(Context context, int resource, List<FbRowItem> objects) {
+            super(context, resource, objects);
+            this.context=context;
+            this.resource=resource;
+            this.objects=objects;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater=((Activity) context).getLayoutInflater();
+            View row=inflater.inflate(resource, parent, false);
+
+            TextView textView = (TextView) row.findViewById(R.id.label);
+            textView.setText(objects.get(position).name);
+
+            ProfilePictureView profilePictureView = (ProfilePictureView) row.findViewById(R.id.profilePicture);
+            profilePictureView.setProfileId(objects.get(position).id);
+
+            return row;
         }
     }
 }

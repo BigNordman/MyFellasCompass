@@ -46,7 +46,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler {
+public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler, GeoManageable {
     public static final long UPDATE_BACKEND_INTERVAL = 15000;
     public static final long TICK_INTERVAL = 2000;
 
@@ -62,13 +62,12 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     private GeoEndpointManager endpointMgr = null;
     private GeoGPSManager gpsMgr = null;
     private MagnetSensorManager magnetManager;
+    private PersonBearingManager bearingMgr;
+
     Timer compassTick = null; // Таймер, использующийся в MainActivity для плавной анимации компаса
 
     private ProfilePictureView personPictureView;
     private ImageView imageCompass;
-
-    private String personId;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +135,12 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             Log.d("LOG", "...GeoGPSManager created...");
         }
 
+        /* bearing manager */
+        if (bearingMgr == null) {
+            bearingMgr = new PersonBearingManager(this);
+            Log.d("LOG", "...PersonBearingManager created...");
+        }
+
         /* profile picture view*/
         profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
 
@@ -191,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                 long currentTime = new Date().getTime();
 
                 if ((currentTime - lastUpdateBackendTime) > UPDATE_BACKEND_INTERVAL) {
+                    // Save "My" coordinates
                     Profile profile = Profile.getCurrentProfile();
                     if (profile != null) {
                         GeoBean geo = new GeoBean();
@@ -201,6 +207,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                         endpointMgr.saveGeo(geo);
                     }
                     gpsMgr.setCurrentLocation(location);
+
+                    // Get "Person" coordinates
+                    if (bearingMgr.getPersonId()!=null)
+                        endpointMgr.getGeo(bearingMgr.getPersonId());
+
                     updateUI();
 
                     lastUpdateBackendTime = currentTime;
@@ -218,11 +229,9 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         // check on SelectPerson result
         if (requestCode==1) {
             if (data == null) {
-                personId = null;
-                Log.d("LOG", "...personId = null");
+                bearingMgr.setPersonId(null);
             } else {
-                personId = data.getStringExtra("id");
-                Log.d("LOG", "...personId = " + personId);
+                bearingMgr.setPersonId(data.getStringExtra("id"));
             }
             updateUI();
         }
@@ -302,9 +311,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             profilePictureView.setProfileId(null);
         }
 
-        TextView textProvider = (TextView)findViewById(R.id.textGPSProvider);
-        textProvider.setText(gpsMgr.getGPSProvider());
-
         TextView gps = (TextView)findViewById(R.id.textGPS);
         if (criticalErr!=null) {
             gps.setText(criticalErr);
@@ -314,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             gps.setTextColor(Color.BLACK);
         }
 
-        personPictureView.setProfileId(personId);
+        personPictureView.setProfileId(bearingMgr.getPersonId());
     }
 
     @Override
@@ -330,15 +336,24 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     @Override
     public void onGeoEndpointGet(GeoBean geoBean) {
+        if (bearingMgr!=null)
+            bearingMgr.setGeoBean(geoBean);
         Log.d("LOG", "geoBean: " + geoBean.toString());
     }
 
     @Override
     public void onGeoEndpointError(int errorType, String errorMessage) {
-        if (errorType==GeoEndpointHandler.WAKEUP_ERROR) {
-            endpointAlive = false;
+
+        switch(errorType) {
+            case GeoEndpointHandler.WAKEUP_ERROR:
+                endpointAlive = false;
+                criticalErr = errorMessage;
+                break;
+            case GeoEndpointHandler.GET_ERROR:
+                criticalErr = getString(R.string.buddy_location_unknown);
+                break;
         }
-        criticalErr = errorMessage;
+
         updateUI();
     }
 
@@ -351,6 +366,26 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     @Override
     public void onGPSLocationChanged(Location location) {
         updateWithNewLocation(location);
+    }
+
+    @Override
+    public GeoEndpointManager getGeoEndpointManager() {
+        return endpointMgr;
+    }
+
+    @Override
+    public GeoGPSManager getGeoGPSManager() {
+        return gpsMgr;
+    }
+
+    @Override
+    public MagnetSensorManager getMagnetSensorManager() {
+        return magnetManager;
+    }
+
+    @Override
+    public PersonBearingManager getPersonBearingManager() {
+        return bearingMgr;
     }
 
 
@@ -376,6 +411,15 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             ra.setFillAfter(true);
             imageCompass.startAnimation(ra);
 
+            /*
+            float azimuthToPerson = bearingMgr.getAzimuthDegree();
+                ((TextView)findViewById(R.id.textExtra1)).setText(String.valueOf(azimuthToPerson)+"°");
+            */
+
+            float distanceToPerson = bearingMgr.getDistance();
+            Log.d("LOG","...distanceToPerson = " + String.valueOf(distanceToPerson));
+            ((TextView)findViewById(R.id.textExtra1)).setText(String.valueOf(distanceToPerson)+" meters");
+
             return false;
         }
     });
@@ -392,6 +436,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         endpointMgr.getGeo("1");
         */
+        Log.d("LOG","...Try button pressed...");
     }
 
 

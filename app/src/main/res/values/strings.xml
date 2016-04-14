@@ -6,10 +6,11 @@
     <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
     <string name="ok">OK</string>
     <string name="access_fine_location_required">Access Fine Location Permission required.</string>
-    <string name="gps_diagnostics">Distance = %1$s m, Time = %2$s, Speed = %3$s km/h, Bearing = %4$s degrees</string>
+    <string name="gps_diagnostics">Distance = %1$s m, Time = %2$s, Speed = %3$s km/h, Bearing = %4$s°</string>
     <string name="gps_provider_disabled">Provider %1$s disabled."</string>
     <string name="select_person">Select Person</string>
     <string name="back">Back</string>
     <string name="select_friend">Select Friend</string>
+    <string name="buddy_location_unknown">Your buddy\'s location is currently unknown.</string>
 
 </resources>

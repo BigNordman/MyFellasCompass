@@ -86,6 +86,11 @@ public class GeoGPSManager {
         curTimeLoc = new TimeLocation(loc,new Date().getTime());
     }
 
+    public Location getCurrentLocation() {
+        if (curTimeLoc == null) return null;
+        else return curTimeLoc.location;
+    }
+
     // distance in meters between measures
     public float getDistance(){
         if (prevTimeLoc != null && curTimeLoc!=null)

@@ -12,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,19 +63,23 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     private GeoEndpointManager endpointMgr = null;
     private GeoGPSManager gpsMgr = null;
-    private MagnetSensorManager magnetManager;
+    //private MagnetSensorManager magnetMgr;
     private PersonBearingManager bearingMgr;
 
     Timer compassTick = null; // Таймер, использующийся в MainActivity для плавной анимации компаса
 
     private ProfilePictureView personPictureView;
     private ImageView imageCompass;
+    private ImageView imageTriangle;
+
+    //private boolean uiLoaded = false;
+    private boolean keepScreenOn = false;
+    private boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("LOG", "...onCreate...");
         super.onCreate(savedInstanceState);
-
 
         /* facebook login */
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -111,6 +117,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                 });
 
         setContentView(R.layout.activity_main);
+        Log.d("LOG", "...setContentView(R.layout.activity_main)...");
+
 
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
@@ -143,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         /* profile picture view*/
         profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
+        Log.d("LOG", "...profilePictureView initialized...");
 
         /* another person picture*/
         personPictureView = (ProfilePictureView) findViewById(R.id.personPicture);
@@ -179,13 +188,16 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         });
 
         /* magnet manager */
-        if (magnetManager == null) {
+        /*
+        if (magnetMgr == null) {
             Log.d("LOG", "...создаем MagnetSensorManager");
-            magnetManager = new MagnetSensorManager(this);
+            magnetMgr = new MagnetSensorManager(this);
         }
+        */
 
         imageCompass = (ImageView) findViewById(R.id.imageViewCompass);
-
+        imageTriangle = (ImageView) findViewById(R.id.imageViewTriangle);
+        initialized = true;
     }
 
     private void updateWithNewLocation(Location location) {
@@ -212,13 +224,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                     if (bearingMgr.getPersonId()!=null)
                         endpointMgr.getGeo(bearingMgr.getPersonId());
 
-                    updateUI();
-
                     lastUpdateBackendTime = currentTime;
                 }
 
             }
-            Log.d("LOG", "...onLocationChanged...");
+            updateUI();
         }
     }
 
@@ -246,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     protected void onResume() {
         super.onResume();
         endpointMgr.wakeUp();
-        magnetManager.startSensor();
+        //magnetMgr.startSensor();
 
         // создаем таймер если еще не создан
         if (compassTick ==null){
@@ -274,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     protected void onPause() {
         super.onPause();
         // to stop the listener and save battery
-        magnetManager.stopSensor();
+        //magnetMgr.stopSensor();
         if (compassTick !=null) {
             compassTick.cancel();
             compassTick = null;
@@ -300,6 +310,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
 
     private void updateUI() {
+        if (!initialized) return;
+
         TextView info = (TextView)findViewById(R.id.textInfo);
         Profile profile = Profile.getCurrentProfile();
 
@@ -366,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     @Override
     public void onGPSLocationChanged(Location location) {
         updateWithNewLocation(location);
+        Log.d("LOG","...onGPSLocationChanged...");
     }
 
     @Override
@@ -378,10 +391,12 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         return gpsMgr;
     }
 
+    /*
     @Override
     public MagnetSensorManager getMagnetSensorManager() {
-        return magnetManager;
+        return magnetMgr;
     }
+    */
 
     @Override
     public PersonBearingManager getPersonBearingManager() {
@@ -398,8 +413,25 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     final Handler compassTickHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
+            /* Magnet compass*/
+            /*
+            RotateAnimation raMagnet;
+            float[] degrees = magnetMgr.getRotateDegrees();
+            raMagnet = new RotateAnimation(
+                    degrees[0],
+                    degrees[1],
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+
+            raMagnet.setDuration(TICK_INTERVAL);
+            raMagnet.setFillAfter(true);
+            imageCompass.startAnimation(raMagnet);
+            */
+
+            /*GPS compass*/
             RotateAnimation ra;
-            float[] degrees = magnetManager.getRotateDegrees();
+            float[] degrees = gpsMgr.getRotateDegrees();
             ra = new RotateAnimation(
                     degrees[0],
                     degrees[1],
@@ -411,14 +443,25 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             ra.setFillAfter(true);
             imageCompass.startAnimation(ra);
 
+            degrees = bearingMgr.getRotateDegrees();
+            ra = new RotateAnimation(
+                    degrees[0],
+                    degrees[1],
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f);
+
+            ra.setDuration(TICK_INTERVAL);
+            ra.setFillAfter(true);
+            imageTriangle.startAnimation(ra);
             /*
             float azimuthToPerson = bearingMgr.getAzimuthDegree();
                 ((TextView)findViewById(R.id.textExtra1)).setText(String.valueOf(azimuthToPerson)+"°");
             */
 
             float distanceToPerson = bearingMgr.getDistance();
-            Log.d("LOG","...distanceToPerson = " + String.valueOf(distanceToPerson));
-            ((TextView)findViewById(R.id.textExtra1)).setText(String.valueOf(distanceToPerson)+" meters");
+            float azimuthToPerson = bearingMgr.getAzimuthDegree();
+            ((TextView)findViewById(R.id.textExtra1)).setText("Dist = " + String.valueOf(distanceToPerson)+" meters. Azimuth = " + String.valueOf(azimuthToPerson) + "°");
 
             return false;
         }
@@ -436,6 +479,15 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         endpointMgr.getGeo("1");
         */
+        if (keepScreenOn) {
+            keepScreenOn = false;
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            ((Button)findViewById(R.id.tryButton)).setText("Keep screen on");
+        } else {
+            keepScreenOn = true;
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            ((Button)findViewById(R.id.tryButton)).setText("Allow device to sleep");
+        }
         Log.d("LOG","...Try button pressed...");
     }
 

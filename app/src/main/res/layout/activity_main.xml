@@ -100,7 +100,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Try"
+        android:text="Keep screen on"
         android:id="@+id/tryButton"
         android:onClick="trySomething"
         android:layout_above="@+id/login_button"

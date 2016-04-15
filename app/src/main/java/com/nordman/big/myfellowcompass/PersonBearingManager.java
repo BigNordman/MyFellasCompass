@@ -15,6 +15,7 @@ public class PersonBearingManager {
     private String personId;
     private GeoBean geoBean;
     private Float azimuthDegree = 0f;
+    private Float currentDegree = 0f;
 
     public PersonBearingManager(Context context) {
         this.context = context;
@@ -33,8 +34,45 @@ public class PersonBearingManager {
     }
 
     public float getAzimuthDegree(){
+        GeoGPSManager gpsMgr = ((GeoManageable)context).getGeoGPSManager();
+        Location myLocation = getMyLocation();
+        Location personLocation = getPersonLocation();
+        Float degree;
 
-        return azimuthDegree;
+        if (myLocation == null || personLocation == null) return -1;
+
+        degree = gpsMgr.getBearing() + myLocation.bearingTo(personLocation);
+        if (degree > 360) degree = degree - 360;
+
+        return -degree;
+
+        //return azimuthDegree;
+    }
+
+    public float[] getRotateDegrees() {
+        float[] result;
+        result = new float[2];
+        azimuthDegree = getAzimuthDegree();
+
+        if (Math.abs(currentDegree - azimuthDegree)>320) {
+            if (Math.abs(currentDegree)>Math.abs(azimuthDegree)) {
+                // c 360 до 0
+                result[0] = currentDegree;
+                result[1] = -360;
+                currentDegree = 0F;
+            } else {
+                // c 0 на 360
+                result[0] = currentDegree;
+                result[1] = 0;
+                currentDegree = -360F;
+            }
+        } else {
+            result[0] = currentDegree;
+            result[1] = azimuthDegree;
+            currentDegree = azimuthDegree;
+        }
+
+        return result;
     }
 
     public float getDistance(){
@@ -69,11 +107,4 @@ public class PersonBearingManager {
         return result;
     }
 
-
-    public float[] getRotateDegrees() {
-        float[] result;
-        result = new float[2];
-
-        return result;
-    }
 }

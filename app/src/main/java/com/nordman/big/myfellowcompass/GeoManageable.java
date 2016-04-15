@@ -7,7 +7,7 @@ package com.nordman.big.myfellowcompass;
 public interface GeoManageable {
     GeoEndpointManager getGeoEndpointManager();
     GeoGPSManager getGeoGPSManager();
-    MagnetSensorManager getMagnetSensorManager();
+    //MagnetSensorManager getMagnetSensorManager();
     PersonBearingManager getPersonBearingManager();
 
 }

@@ -23,6 +23,8 @@ public class GeoGPSManager {
     private String gpsProvider;
     private TimeLocation prevTimeLoc = null;
     private TimeLocation curTimeLoc = null;
+    private Float azimuthDegree = 0f;
+    private Float currentDegree = 0f;
 
     public GeoGPSManager(Context context) {
         this.context = context;
@@ -54,6 +56,7 @@ public class GeoGPSManager {
         @Override
         public void onLocationChanged(Location location) {
             ((GeoGPSHandler) context).onGPSLocationChanged(location);
+            azimuthDegree = - getBearing();
         }
 
         @Override
@@ -135,4 +138,34 @@ public class GeoGPSManager {
         }
 
     }
+
+    public float getAzimuthDegree(){
+        return azimuthDegree;
+    }
+
+    public float[] getRotateDegrees() {
+        float[] result;
+        result = new float[2];
+
+        if (Math.abs(currentDegree - azimuthDegree)>320) {
+            if (Math.abs(currentDegree)>Math.abs(azimuthDegree)) {
+                // c 360 до 0
+                result[0] = currentDegree;
+                result[1] = -360;
+                currentDegree = 0F;
+            } else {
+                // c 0 на 360
+                result[0] = currentDegree;
+                result[1] = 0;
+                currentDegree = -360F;
+            }
+        } else {
+            result[0] = currentDegree;
+            result[1] = azimuthDegree;
+            currentDegree = azimuthDegree;
+        }
+
+        return result;
+    }
+
 }

@@ -51,6 +51,7 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler, GeoManageable {
     public static final long UPDATE_BACKEND_INTERVAL = 15000;
     public static final long TICK_INTERVAL = 2000;
+    private static final double MIN_SPEED_FOR_ROTATION = 1.2;
 
     private ProfilePictureView profilePictureView;
 
@@ -430,6 +431,12 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             */
 
             /*GPS compass*/
+            double curSpeed = gpsMgr.getSpeed();
+            Log.d("LOG","...curSpeed=" + curSpeed);
+            if (curSpeed < MIN_SPEED_FOR_ROTATION) {
+                return false;
+            }
+
             RotateAnimation ra;
             float[] degrees = gpsMgr.getRotateDegrees();
             ra = new RotateAnimation(
@@ -454,10 +461,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             ra.setDuration(TICK_INTERVAL);
             ra.setFillAfter(true);
             imageTriangle.startAnimation(ra);
-            /*
-            float azimuthToPerson = bearingMgr.getAzimuthDegree();
-                ((TextView)findViewById(R.id.textExtra1)).setText(String.valueOf(azimuthToPerson)+"°");
-            */
 
             float distanceToPerson = bearingMgr.getDistance();
             float azimuthToPerson = bearingMgr.getAzimuthDegree();

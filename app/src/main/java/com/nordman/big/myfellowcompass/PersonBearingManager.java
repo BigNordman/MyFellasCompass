@@ -42,7 +42,7 @@ public class PersonBearingManager {
         if (myLocation == null || personLocation == null) return -1;
 
         degree = gpsMgr.getBearing() + myLocation.bearingTo(personLocation);
-        if (degree > 360) degree = degree - 360;
+        //if (degree > 360) degree = degree - 360;
 
         return -degree;
 

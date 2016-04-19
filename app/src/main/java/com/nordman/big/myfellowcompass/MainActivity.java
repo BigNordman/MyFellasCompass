@@ -244,8 +244,10 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         if (requestCode==1) {
             if (data == null) {
                 bearingMgr.setPersonId(null);
+                gpsMgr.setMode(GeoGPSManager.PASSIVE_MODE);
             } else {
                 bearingMgr.setPersonId(data.getStringExtra("id"));
+                gpsMgr.setMode(GeoGPSManager.ACTIVE_MODE);
             }
             updateUI();
         }
@@ -258,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     @Override
     protected void onResume() {
+        Log.d("LOG", "...onResume...");
         super.onResume();
         endpointMgr.wakeUp();
         //magnetMgr.startSensor();
@@ -267,6 +270,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             compassTick = new Timer();
             compassTick.schedule(new UpdateCompassTickTask(), 0, TICK_INTERVAL); //тикаем каждую секунду
         }
+
+        if (bearingMgr.getPersonId()!=null)
+            gpsMgr.setMode(GeoGPSManager.ACTIVE_MODE);
+        else
+            gpsMgr.setMode(GeoGPSManager.PASSIVE_MODE);
 
 
         updateUI();
@@ -286,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     @Override
     protected void onPause() {
+        Log.d("LOG", "...onPause...");
         super.onPause();
         // to stop the listener and save battery
         //magnetMgr.stopSensor();
@@ -294,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             compassTick = null;
         }
 
+        gpsMgr.setMode(GeoGPSManager.PASSIVE_MODE);
     }
 
     @Override

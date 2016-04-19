@@ -41,12 +41,9 @@ public class PersonBearingManager {
 
         if (myLocation == null || personLocation == null) return -1;
 
-        degree = gpsMgr.getBearing() + myLocation.bearingTo(personLocation);
-        //if (degree > 360) degree = degree - 360;
+        degree = -(gpsMgr.getBearing() - myLocation.bearingTo(personLocation));
 
-        return -degree;
-
-        //return azimuthDegree;
+        return degree;
     }
 
     public float[] getRotateDegrees() {

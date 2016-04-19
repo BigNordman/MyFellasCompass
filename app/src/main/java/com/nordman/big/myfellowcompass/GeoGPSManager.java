@@ -18,6 +18,9 @@ import java.util.Date;
  *
  */
 public class GeoGPSManager {
+    public static final int PASSIVE_MODE = 1;
+    public static final int ACTIVE_MODE = 2;
+
     private Context context;
     private LocationManager locationManager;
     private String gpsProvider;
@@ -25,6 +28,8 @@ public class GeoGPSManager {
     private TimeLocation curTimeLoc = null;
     private Float azimuthDegree = 0f;
     private Float currentDegree = 0f;
+    private int mode = PASSIVE_MODE;
+
 
     public GeoGPSManager(Context context) {
         this.context = context;
@@ -46,9 +51,14 @@ public class GeoGPSManager {
             Location location = locationManager.getLastKnownLocation(gpsProvider);
             ((GeoGPSHandler) context).onGPSLocationChanged(location);
 
-            locationManager.requestLocationUpdates(gpsProvider, 1000, 0, locationListener);
+            locationManager.requestLocationUpdates(gpsProvider, 10000, 10, locationListener);
         }
 
+    }
+
+    public void setMode(int mode) {
+        // TODO: implement ACTIVE and PASSIVE GPS modes
+        this.mode = mode;
     }
 
     private final LocationListener locationListener = new LocationListener() {
@@ -167,5 +177,4 @@ public class GeoGPSManager {
 
         return result;
     }
-
 }

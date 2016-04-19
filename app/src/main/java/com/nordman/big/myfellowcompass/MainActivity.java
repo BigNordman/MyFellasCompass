@@ -49,7 +49,7 @@ import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler, GeoManageable {
-    public static final long UPDATE_BACKEND_INTERVAL = 15000;
+    public static final long UPDATE_BACKEND_INTERVAL = 60000;
     public static final long TICK_INTERVAL = 2000;
     private static final double MIN_SPEED_FOR_ROTATION = 1.2;
 
@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                         geo.setLon(location.getLongitude());
                         endpointMgr.saveGeo(geo);
                     }
-                    gpsMgr.setCurrentLocation(location);
+                    //gpsMgr.setCurrentLocation(location);
 
                     // Get "Person" coordinates
                     if (bearingMgr.getPersonId()!=null)
@@ -228,6 +228,9 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                     lastUpdateBackendTime = currentTime;
                 }
 
+            }
+            if (gpsMgr != null) {
+                gpsMgr.setCurrentLocation(location);
             }
             updateUI();
         }
@@ -329,8 +332,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             gps.setText(criticalErr);
             gps.setTextColor(Color.RED);
         } else {
-            gps.setText(getString(R.string.gps_diagnostics, String.format("%.2f", gpsMgr.getDistance()), String.valueOf(gpsMgr.getTime()), String.format("%.2f", gpsMgr.getSpeed()), String.format("%.0f", gpsMgr.getBearing())));
-            gps.setTextColor(Color.BLACK);
+            Location instantLocation = gpsMgr.getCurrentLocation();
+            if (instantLocation != null) {
+                gps.setText(getString(R.string.gps_diagnostics, String.valueOf(instantLocation.getLatitude() + " : " + String.valueOf(instantLocation.getLongitude()))));
+                gps.setTextColor(Color.BLACK);
+            }
         }
 
         personPictureView.setProfileId(bearingMgr.getPersonId());
@@ -363,7 +369,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                 criticalErr = errorMessage;
                 break;
             case GeoEndpointHandler.GET_ERROR:
-                criticalErr = getString(R.string.buddy_location_unknown);
+                //criticalErr = getString(R.string.buddy_location_unknown);
+                criticalErr = errorMessage;
                 break;
         }
 
@@ -471,17 +478,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     });
 
     public void trySomething(View view) {
-        /*
-        Profile profile = Profile.getCurrentProfile();
-        GeoBean geo = new GeoBean();
-
-        geo.setId(Long.valueOf(profile.getId()));
-        geo.setLat(100.001);
-        geo.setLon(100.002);
-        endpointMgr.saveGeo(geo);
-
-        endpointMgr.getGeo("1");
-        */
         if (keepScreenOn) {
             keepScreenOn = false;
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -492,6 +488,25 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             ((Button)findViewById(R.id.tryButton)).setText("Allow device to sleep");
         }
         Log.d("LOG","...Try button pressed...");
+        /*
+        // gpsBearing
+        Location st = new Location("");
+        st.setLatitude(56.899036);
+        st.setLongitude(60.646792);
+
+        Location fin = new Location("");
+        fin.setLatitude(56.898572);
+        fin.setLongitude(60.647338);
+
+        Location home = new Location("");
+        home.setLatitude(56.898087);
+        home.setLongitude(60.648483);
+
+
+        Log.d("LOG","...GPSBearing=" + st.bearingTo(fin));
+        Log.d("LOG","...PersonBearing=" + fin.bearingTo(home));
+        Log.d("LOG","...GetAzimuthDegree=" + (-(st.bearingTo(fin)+fin.bearingTo(home))));
+        */
     }
 
 

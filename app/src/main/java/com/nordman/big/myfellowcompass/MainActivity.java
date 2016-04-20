@@ -43,6 +43,7 @@ import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -520,10 +521,19 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     }
 
     public void openMap(View view) {
+        Profile profile = Profile.getCurrentProfile();
+        PersonOnMap me = null;
         Intent intent = new Intent(this, MapsActivity.class);
+
+        if (profile != null) {
+            //me = new PersonOnMap(profile.getId(), String.valueOf(gpsMgr.getCurrentLocation().getLatitude()),  String.valueOf(gpsMgr.getCurrentLocation().getLongitude()));
+            me = new PersonOnMap(profile.getId());
+
+            Bundle mBundle = new Bundle();
+            mBundle.putSerializable("PersonOnMap", me);
+            intent.putExtras(mBundle);
+        }
+
         startActivity(intent);
     }
-
-
-
 }

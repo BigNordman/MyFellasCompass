@@ -519,5 +519,11 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         */
     }
 
+    public void openMap(View view) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+
 
 }

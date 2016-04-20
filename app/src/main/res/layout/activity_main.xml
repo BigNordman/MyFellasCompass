@@ -97,15 +97,32 @@
             android:layout_centerHorizontal="true"
             />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Keep screen on"
-        android:id="@+id/tryButton"
-        android:onClick="trySomething"
-        android:layout_above="@+id/login_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp" />
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/login_button"
+            android:layout_centerHorizontal="true"
+            android:gravity="center">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keep screen on"
+                android:id="@+id/tryButton"
+                android:onClick="trySomething"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="4dp" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Map"
+                android:id="@+id/mapButton"
+                android:onClick="openMap"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="4dp" />
+        </LinearLayout>
+
 
 
     <com.facebook.login.widget.LoginButton

@@ -527,11 +527,14 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
         if (profile != null) {
             //me = new PersonOnMap(profile.getId(), String.valueOf(gpsMgr.getCurrentLocation().getLatitude()),  String.valueOf(gpsMgr.getCurrentLocation().getLongitude()));
-            me = new PersonOnMap(profile.getId());
+            Location curLocation = gpsMgr.getCurrentLocation();
+            if (curLocation != null) {
+                me = new PersonOnMap(profile.getId(),gpsMgr.getCurrentLocation().getLatitude(),gpsMgr.getCurrentLocation().getLongitude());
 
-            Bundle mBundle = new Bundle();
-            mBundle.putSerializable("PersonOnMap", me);
-            intent.putExtras(mBundle);
+                Bundle mBundle = new Bundle();
+                mBundle.putSerializable("PersonOnMap", me);
+                intent.putExtras(mBundle);
+            }
         }
 
         startActivity(intent);

@@ -9,43 +9,24 @@ import java.io.Serializable;
 public class PersonOnMap implements Serializable {
     private static final long serialVersionUID = 1L;
     private String id;
+    private Double lat;
+    private Double lon;
 
-    public PersonOnMap(String id) {
+    public PersonOnMap(String id, Double lat, Double lon) {
         this.id = id;
+        this.lat = lat;
+        this.lon = lon;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public Double getLat() {
+        return lat;
     }
-/*
-        private String lat;
-        private String lon;
 
-        public PersonOnMap(String id, String lat, String lon) {
-            this.id = id;
-            this.lat = lat;
-            this.lon = lon;
-        }
-
-
-        public String getLat() {
-            return lat;
-        }
-
-        public void setLat(String lat) {
-            this.lat = lat;
-        }
-
-        public String getLon() {
-            return lon;
-        }
-
-        public void setLon(String lon) {
-            this.lon = lon;
-        }
-*/
+    public Double getLon() {
+        return lon;
+    }
 }

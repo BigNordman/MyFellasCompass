@@ -49,7 +49,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler, GeoManageable {
+public class MainActivity extends AppCompatActivity implements GeoEndpointHandler, GeoGPSHandler {
     public static final long UPDATE_BACKEND_INTERVAL = 60000;
     public static final long TICK_INTERVAL = 2000;
     private static final double MIN_SPEED_FOR_ROTATION = 1.2;
@@ -62,11 +62,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     private CallbackManager callbackManager;
     private ProfileTracker profileTracker;
-
-    private GeoEndpointManager endpointMgr = null;
-    private GeoGPSManager gpsMgr = null;
-    //private MagnetSensorManager magnetMgr;
-    private PersonBearingManager bearingMgr;
 
     Timer compassTick = null; // Таймер, использующийся в MainActivity для плавной анимации компаса
 
@@ -133,21 +128,24 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             }
         };
 
+        /* GeoSingleton */
+
         /* endpoint manager */
-        if (endpointMgr == null) {
-            endpointMgr = new GeoEndpointManager(this);
+        if (GeoSingleton.getInstance().getGeoEndpointManager() == null) {
+            GeoSingleton.getInstance().setGeoEndpointManager(new GeoEndpointManager(this));
+            //endpointMgr = new GeoEndpointManager(this);
             Log.d("LOG", "...GeoEndpointManager created...");
         }
 
         /* gps manager */
-        if (gpsMgr == null) {
-            gpsMgr = new GeoGPSManager(this);
+        if (GeoSingleton.getInstance().getGeoGPSManager() == null) {
+            GeoSingleton.getInstance().setGeoGPSManager(new GeoGPSManager(this));
             Log.d("LOG", "...GeoGPSManager created...");
         }
 
         /* bearing manager */
-        if (bearingMgr == null) {
-            bearingMgr = new PersonBearingManager(this);
+        if (GeoSingleton.getInstance().getPersonBearingManager() == null) {
+            GeoSingleton.getInstance().setPersonBearingManager(new PersonBearingManager(this));
             Log.d("LOG", "...PersonBearingManager created...");
         }
 
@@ -218,20 +216,20 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                         geo.setId(Long.valueOf(profile.getId()));
                         geo.setLat(location.getLatitude());
                         geo.setLon(location.getLongitude());
-                        endpointMgr.saveGeo(geo);
+                        GeoSingleton.getInstance().getGeoEndpointManager().saveGeo(geo);
                     }
                     //gpsMgr.setCurrentLocation(location);
 
                     // Get "Person" coordinates
-                    if (bearingMgr.getPersonId()!=null)
-                        endpointMgr.getGeo(bearingMgr.getPersonId());
+                    if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId()!=null)
+                        GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
 
                     lastUpdateBackendTime = currentTime;
                 }
 
             }
-            if (gpsMgr != null) {
-                gpsMgr.setCurrentLocation(location);
+            if (GeoSingleton.getInstance().getGeoGPSManager() != null) {
+                GeoSingleton.getInstance().getGeoGPSManager().setCurrentLocation(location);
             }
             updateUI();
         }
@@ -244,11 +242,13 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         // check on SelectPerson result
         if (requestCode==1) {
             if (data == null) {
-                bearingMgr.setPersonId(null);
-                gpsMgr.setMode(GeoGPSManager.PASSIVE_MODE);
+                GeoSingleton.getInstance().getPersonBearingManager().setPersonId(null);
+                GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.PASSIVE_MODE);
             } else {
-                bearingMgr.setPersonId(data.getStringExtra("id"));
-                gpsMgr.setMode(GeoGPSManager.ACTIVE_MODE);
+                GeoSingleton.getInstance().getPersonBearingManager().setPersonId(data.getStringExtra("id"));
+                GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
+
+                GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.ACTIVE_MODE);
             }
             updateUI();
         }
@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
     protected void onResume() {
         Log.d("LOG", "...onResume...");
         super.onResume();
-        endpointMgr.wakeUp();
+        GeoSingleton.getInstance().getGeoEndpointManager().wakeUp();
         //magnetMgr.startSensor();
 
         // создаем таймер если еще не создан
@@ -272,10 +272,10 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             compassTick.schedule(new UpdateCompassTickTask(), 0, TICK_INTERVAL); //тикаем каждую секунду
         }
 
-        if (bearingMgr.getPersonId()!=null)
-            gpsMgr.setMode(GeoGPSManager.ACTIVE_MODE);
+        if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId()!=null)
+            GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.ACTIVE_MODE);
         else
-            gpsMgr.setMode(GeoGPSManager.PASSIVE_MODE);
+            GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.PASSIVE_MODE);
 
 
         updateUI();
@@ -289,8 +289,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         AppEventsLogger.deactivateApp(this);
 
         profileTracker.stopTracking();
-        endpointMgr.destroy();
-        gpsMgr.stopLocating();
+        GeoSingleton.getInstance().getGeoEndpointManager().destroy();
+        GeoSingleton.getInstance().getGeoGPSManager().stopLocating();
     }
 
     @Override
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             compassTick = null;
         }
 
-        gpsMgr.setMode(GeoGPSManager.PASSIVE_MODE);
+        GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.PASSIVE_MODE);
     }
 
     @Override
@@ -343,14 +343,14 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             gps.setText(criticalErr);
             gps.setTextColor(Color.RED);
         } else {
-            Location instantLocation = gpsMgr.getCurrentLocation();
+            Location instantLocation = GeoSingleton.getInstance().getGeoGPSManager().getCurrentLocation();
             if (instantLocation != null) {
                 gps.setText(getString(R.string.gps_diagnostics, String.valueOf(instantLocation.getLatitude() + " : " + String.valueOf(instantLocation.getLongitude()))));
                 gps.setTextColor(Color.BLACK);
             }
         }
 
-        personPictureView.setProfileId(bearingMgr.getPersonId());
+        personPictureView.setProfileId(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
     }
 
     @Override
@@ -366,8 +366,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
     @Override
     public void onGeoEndpointGet(GeoBean geoBean) {
-        if (bearingMgr!=null)
-            bearingMgr.setGeoBean(geoBean);
+        if (GeoSingleton.getInstance().getPersonBearingManager()!=null)
+            GeoSingleton.getInstance().getPersonBearingManager().setGeoBean(geoBean);
         Log.d("LOG", "geoBean: " + geoBean.toString());
     }
 
@@ -400,29 +400,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
         Log.d("LOG","...onGPSLocationChanged...");
     }
 
-    @Override
-    public GeoEndpointManager getGeoEndpointManager() {
-        return endpointMgr;
-    }
-
-    @Override
-    public GeoGPSManager getGeoGPSManager() {
-        return gpsMgr;
-    }
-
-    /*
-    @Override
-    public MagnetSensorManager getMagnetSensorManager() {
-        return magnetMgr;
-    }
-    */
-
-    @Override
-    public PersonBearingManager getPersonBearingManager() {
-        return bearingMgr;
-    }
-
-
     private class UpdateCompassTickTask extends TimerTask {
         public void run() {
             compassTickHandler.sendEmptyMessage(0);
@@ -449,14 +426,14 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             */
 
             /*GPS compass*/
-            double curSpeed = gpsMgr.getSpeed();
+            double curSpeed = GeoSingleton.getInstance().getGeoGPSManager().getSpeed();
             Log.d("LOG","...curSpeed=" + curSpeed);
             if (curSpeed < MIN_SPEED_FOR_ROTATION) {
                 return false;
             }
 
             RotateAnimation ra;
-            float[] degrees = gpsMgr.getRotateDegrees();
+            float[] degrees = GeoSingleton.getInstance().getGeoGPSManager().getRotateDegrees();
             ra = new RotateAnimation(
                     degrees[0],
                     degrees[1],
@@ -468,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             ra.setFillAfter(true);
             imageCompass.startAnimation(ra);
 
-            degrees = bearingMgr.getRotateDegrees();
+            degrees = GeoSingleton.getInstance().getPersonBearingManager().getRotateDegrees();
             ra = new RotateAnimation(
                     degrees[0],
                     degrees[1],
@@ -480,8 +457,8 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             ra.setFillAfter(true);
             imageTriangle.startAnimation(ra);
 
-            float distanceToPerson = bearingMgr.getDistance();
-            float azimuthToPerson = bearingMgr.getAzimuthDegree();
+            float distanceToPerson = GeoSingleton.getInstance().getPersonBearingManager().getDistance();
+            float azimuthToPerson = GeoSingleton.getInstance().getPersonBearingManager().getAzimuthDegree();
             ((TextView)findViewById(R.id.textExtra1)).setText("Dist = " + String.valueOf(distanceToPerson)+" meters. Azimuth = " + String.valueOf(azimuthToPerson) + "°");
 
             return false;
@@ -498,38 +475,18 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             ((Button)findViewById(R.id.tryButton)).setText("Allow device to sleep");
         }
-        Log.d("LOG","...Try button pressed...");
-        /*
-        // gpsBearing
-        Location st = new Location("");
-        st.setLatitude(56.899036);
-        st.setLongitude(60.646792);
-
-        Location fin = new Location("");
-        fin.setLatitude(56.898572);
-        fin.setLongitude(60.647338);
-
-        Location home = new Location("");
-        home.setLatitude(56.898087);
-        home.setLongitude(60.648483);
-
-
-        Log.d("LOG","...GPSBearing=" + st.bearingTo(fin));
-        Log.d("LOG","...PersonBearing=" + fin.bearingTo(home));
-        Log.d("LOG","...GetAzimuthDegree=" + (-(st.bearingTo(fin)+fin.bearingTo(home))));
-        */
     }
 
     public void openMap(View view) {
+        // для быстрой отрисовки передаем в карту свои координаты
         Profile profile = Profile.getCurrentProfile();
         PersonOnMap me = null;
         Intent intent = new Intent(this, MapsActivity.class);
 
         if (profile != null) {
-            //me = new PersonOnMap(profile.getId(), String.valueOf(gpsMgr.getCurrentLocation().getLatitude()),  String.valueOf(gpsMgr.getCurrentLocation().getLongitude()));
-            Location curLocation = gpsMgr.getCurrentLocation();
+            Location curLocation = GeoSingleton.getInstance().getGeoGPSManager().getCurrentLocation();
             if (curLocation != null) {
-                me = new PersonOnMap(profile.getId(),gpsMgr.getCurrentLocation().getLatitude(),gpsMgr.getCurrentLocation().getLongitude());
+                me = new PersonOnMap(profile.getId(),GeoSingleton.getInstance().getGeoGPSManager().getCurrentLocation().getLatitude(),GeoSingleton.getInstance().getGeoGPSManager().getCurrentLocation().getLongitude());
 
                 Bundle mBundle = new Bundle();
                 mBundle.putSerializable("PersonOnMap", me);

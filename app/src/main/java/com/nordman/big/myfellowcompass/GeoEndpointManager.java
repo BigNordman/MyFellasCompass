@@ -26,6 +26,10 @@ public class GeoEndpointManager {
         geoApiService = builder.build();
     }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
     public void wakeUp() {
         class wakeUpAsyncTask extends AsyncTask<String, Void, String>{
             private String errorMessage;

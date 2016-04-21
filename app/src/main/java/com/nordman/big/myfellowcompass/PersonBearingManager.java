@@ -34,14 +34,13 @@ public class PersonBearingManager {
     }
 
     public float getAzimuthDegree(){
-        GeoGPSManager gpsMgr = ((GeoManageable)context).getGeoGPSManager();
         Location myLocation = getMyLocation();
         Location personLocation = getPersonLocation();
         Float degree;
 
         if (myLocation == null || personLocation == null) return -1;
 
-        degree = -(gpsMgr.getBearing() - myLocation.bearingTo(personLocation));
+        degree = -(GeoSingleton.getInstance().getGeoGPSManager().getBearing() - myLocation.bearingTo(personLocation));
 
         return degree;
     }
@@ -81,17 +80,15 @@ public class PersonBearingManager {
         return myLocation.distanceTo(personLocation);
     }
 
-    private Location getMyLocation() {
+    public Location getMyLocation() {
         Location result;
-        GeoGPSManager gpsMgr;
-        gpsMgr = ((GeoManageable)context).getGeoGPSManager();
 
-        result = gpsMgr.getCurrentLocation();
+        result = GeoSingleton.getInstance().getGeoGPSManager().getCurrentLocation();
         if (result != null) Log.d("LOG","...My location = " + result.toString());
         return result;
     }
 
-    private Location getPersonLocation() {
+    public Location getPersonLocation() {
         Location result;
         if (geoBean == null) return null;
 

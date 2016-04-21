@@ -33,27 +33,11 @@ public class GeoGPSManager {
 
     public GeoGPSManager(Context context) {
         this.context = context;
+        startLocating();
+    }
 
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-        Criteria crta = new Criteria();
-        crta.setAccuracy(Criteria.ACCURACY_FINE);
-        crta.setAltitudeRequired(false);
-        crta.setBearingRequired(false);
-        crta.setCostAllowed(true);
-        crta.setPowerRequirement(Criteria.POWER_LOW);
-        gpsProvider = locationManager.getBestProvider(crta, true);
-        Log.d("LOG", "...GPSProvider = " + gpsProvider + "...");
-
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ((GeoGPSHandler) context).onGPSError(GeoGPSHandler.PERMISSION_ERROR, context.getString(R.string.access_fine_location_required));
-        } else {
-            Location location = locationManager.getLastKnownLocation(gpsProvider);
-            ((GeoGPSHandler) context).onGPSLocationChanged(location);
-
-            locationManager.requestLocationUpdates(gpsProvider, 10000, 10, locationListener);
-        }
-
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public void setMode(int mode) {
@@ -137,6 +121,28 @@ public class GeoGPSManager {
 
     public String getGPSProvider(){
         return gpsProvider;
+    }
+
+    public void startLocating(){
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria crta = new Criteria();
+        crta.setAccuracy(Criteria.ACCURACY_FINE);
+        crta.setAltitudeRequired(false);
+        crta.setBearingRequired(false);
+        crta.setCostAllowed(true);
+        crta.setPowerRequirement(Criteria.POWER_LOW);
+        gpsProvider = locationManager.getBestProvider(crta, true);
+        Log.d("LOG", "...GPSProvider = " + gpsProvider + "...");
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ((GeoGPSHandler) context).onGPSError(GeoGPSHandler.PERMISSION_ERROR, context.getString(R.string.access_fine_location_required));
+        } else {
+            Location location = locationManager.getLastKnownLocation(gpsProvider);
+            ((GeoGPSHandler) context).onGPSLocationChanged(location);
+
+            locationManager.requestLocationUpdates(gpsProvider, 10000, 10, locationListener);
+        }
     }
 
     public void stopLocating(){

@@ -12,7 +12,7 @@
         <option name="HTTP_PORT" value="8080" />
         <option name="WAR_DIR" value="C:\Android\AndroidStudioProjects\MyFellasCompass\backend\build\exploded-app" />
         <option name="WEB_APP_DIR" value="C:\Android\AndroidStudioProjects\MyFellasCompass\backend\src\main\webapp" />
-        <option name="APPENGINE_SDKROOT" value="C:\Users\s_vershinin\.gradle\appengine-sdk\appengine-java-sdk-1.9.32" />
+        <option name="APPENGINE_SDKROOT" value="C:\Users\Sergey\.gradle\appengine-sdk\appengine-java-sdk-1.9.32" />
       </configuration>
     </facet>
     <facet type="java-gradle" name="Java-Gradle">
@@ -46,6 +46,5 @@
     <orderEntry type="library" exported="" name="objectify-5.1.11" level="project" />
     <orderEntry type="library" exported="" name="guava-19.0" level="project" />
     <orderEntry type="library" exported="" name="appengine-api-1.0-sdk-1.9.32" level="project" />
-    <orderEntry type="library" exported="" name="backend.backend-android-endpoints" level="project" />
   </component>
 </module>

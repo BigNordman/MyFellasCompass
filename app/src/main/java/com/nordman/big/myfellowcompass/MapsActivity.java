@@ -3,6 +3,7 @@ package com.nordman.big.myfellowcompass;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private PersonOnMap me = null;
+    private PersonOnMap him = null;
+    private PersonOnMap toDraw = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         me = (PersonOnMap) intent.getSerializableExtra("PersonOnMap");
-        Log.d("LOG", "...My id = " + me.getId());
+
+        if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId() != null) {
+            Location himLocation = GeoSingleton.getInstance().getPersonBearingManager().getPersonLocation();
+            if (himLocation != null) {
+                him = new PersonOnMap(GeoSingleton.getInstance().getPersonBearingManager().getPersonId(),himLocation.getLatitude(),himLocation.getLongitude());
+            }
+            //GeoSingleton.getInstance().getPersonBearingManager().
+        }
+
     }
 
 
@@ -54,8 +65,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (me != null) {
+        if (him !=null) {
+            new GraphRequest(
+                    AccessToken.getCurrentAccessToken(),
+                    "/" + him.getId() + "/picture",
+                    null,
+                    HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        public void onCompleted(GraphResponse response) {
+                            new GetProfileImageTask().execute(him);
+                        }
+                    }
+            ).executeAsync();
+        }
 
+        if (me != null) {
             new GraphRequest(
                     AccessToken.getCurrentAccessToken(),
                     "/" + me.getId() + "/picture",
@@ -79,6 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 imgUrl = new URL("https://graph.facebook.com/" + person[0].getId() + "/picture?type=normal" );
 
                 InputStream in = (InputStream) imgUrl.getContent();
+                toDraw = person[0];
                 result = BitmapFactory.decodeStream(in);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -90,14 +115,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // This is called when doInBackground() is finished
         protected void onPostExecute(Bitmap result) {
             Bitmap roundPict = Util.getCroppedBitmap(result);
-            LatLng myLatLng = new LatLng(me.getLat(), me.getLon());
+            LatLng myLatLng = new LatLng(toDraw.getLat(), toDraw.getLon());
             mMap.addMarker(new MarkerOptions()
                     .position(myLatLng)
-                    .title("Me")
+                    .title(toDraw.getId())
                     .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myLatLng));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 12.0f));
-
+            if (toDraw == me) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 12.0f));
+                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 12.0f));
+            }
         }
     }
 }

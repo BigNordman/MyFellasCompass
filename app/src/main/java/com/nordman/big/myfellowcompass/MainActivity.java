@@ -43,7 +43,6 @@ import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -160,10 +159,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
 
             @Override
             public void onClick(View v) {
-                /*
-                Intent intent = new Intent(MainActivity.this, SelectPersonActivity.class);
-                MainActivity.this.startActivityForResult(intent, 1);
-                */
                 GraphRequestAsyncTask graphRequestAsyncTask = new GraphRequest(
                         AccessToken.getCurrentAccessToken(),
                         //AccessToken.getCurrentAccessToken(),
@@ -176,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                                 try {
                                     JSONArray rawName = response.getJSONObject().getJSONArray("data");
                                     intent.putExtra("jsondata", rawName.toString());
-                                    //startActivity(intent);
                                     startActivityForResult(intent, 1);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -218,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements GeoEndpointHandle
                         geo.setLon(location.getLongitude());
                         GeoSingleton.getInstance().getGeoEndpointManager().saveGeo(geo);
                     }
-                    //gpsMgr.setCurrentLocation(location);
 
                     // Get "Person" coordinates
                     if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId()!=null)

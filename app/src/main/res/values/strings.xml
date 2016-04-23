@@ -14,4 +14,10 @@
     <string name="buddy_location_unknown">Your buddy\'s location is currently unknown.</string>
     <string name="title_activity_maps">Map</string>
 
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="title_activity_activityplash">Activityplash</string>
+
 </resources>

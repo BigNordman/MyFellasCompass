@@ -8,6 +8,9 @@ import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -31,6 +34,7 @@ public class SplashActivity extends AppCompatActivity {
     private ProfilePictureView profilePictureView;
     private CallbackManager fbCallbackManager;
     private ProfileTracker profileTracker;
+    private ImageButton continueButton;
     Timer delayTimer = null;
 
     @Override
@@ -46,11 +50,7 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("LOG", "login successfull");
-
-                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        overridePendingTransition(0, 0);
-                        finish();
+                        updateProfilePicture();
                     }
 
                     @Override
@@ -79,31 +79,19 @@ public class SplashActivity extends AppCompatActivity {
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
 
+        continueButton = (ImageButton) findViewById(R.id.continueButton);
+
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                updateProfilePicture();
                 Log.d("LOG", "...CurrentProfileChanged...");
             }
         };
 
         profilePictureView = (ProfilePictureView) findViewById(R.id.splashProfilePicture);
 
-        Profile profile = Profile.getCurrentProfile();
-
-        if (profile != null) {
-            profilePictureView.setProfileId(profile.getId());
-
-            delayTimer = new Timer();
-            delayTimer.schedule(new delayTask(),START_DELAY);
-
-        } else {
-            //profilePictureView.setProfileId(null);
-            /*
-            delayTimer = new Timer();
-            delayTimer.schedule(new delayTask(),START_DELAY);
-            */
-
-        }
+        updateProfilePicture();
 
     }
 
@@ -121,9 +109,18 @@ public class SplashActivity extends AppCompatActivity {
 
         if (profile != null) {
             profilePictureView.setProfileId(profile.getId());
+            continueButton.setVisibility(View.VISIBLE);
         } else {
             profilePictureView.setProfileId(null);
+            continueButton.setVisibility(View.INVISIBLE);
         }
+    }
+
+    public void onContinue(View view) {
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+        finish();
     }
 
     private class delayTask extends TimerTask {

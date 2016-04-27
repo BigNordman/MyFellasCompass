@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#0F357E</color>
+    <color name="colorPrimaryDark">#061533</color>
     <color name="colorAccent">#FF4081</color>
     <color name="actionbarColorText">#ffffff</color>
+    <color name="black_overlay">#660000</color>
+    <color name="facebook_button">#3f5baf</color>
 
-    <color name="black_overlay">#66000000</color>
+    3F5BAF
 </resources>

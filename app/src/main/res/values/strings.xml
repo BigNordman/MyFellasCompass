@@ -19,5 +19,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="title_activity_activityplash">Activityplash</string>
+    <string name="continue_button">Continue</string>
 
 </resources>

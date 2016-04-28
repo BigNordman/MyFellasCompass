@@ -10,6 +10,8 @@ public class GeoSingleton {
     private GeoEndpointManager geoEndpointManager = null;
     private GeoGPSManager geoGPSManager = null;
     private PersonBearingManager personBearingManager = null;
+    private String profileId;
+    private String profileName;
 
     public static GeoSingleton getInstance() {
         if(ourInstance == null)
@@ -44,5 +46,21 @@ public class GeoSingleton {
 
     public void setPersonBearingManager(PersonBearingManager personBearingManager) {
         this.personBearingManager = personBearingManager;
+    }
+
+    public String getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 }

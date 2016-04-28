@@ -4,13 +4,11 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -26,7 +24,6 @@ import com.facebook.login.widget.ProfilePictureView;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 public class SplashActivity extends AppCompatActivity {
     public static final long START_DELAY = 1500;
@@ -41,6 +38,8 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d("LOG","test!!!!!");
+
         /* facebook login */
         FacebookSdk.sdkInitialize(getApplicationContext());
         fbCallbackManager = CallbackManager.Factory.create();
@@ -50,7 +49,7 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("LOG", "login successfull");
-                        updateProfilePicture();
+                        updateProfile();
                     }
 
                     @Override
@@ -84,14 +83,14 @@ public class SplashActivity extends AppCompatActivity {
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                updateProfilePicture();
+                updateProfile();
                 Log.d("LOG", "...CurrentProfileChanged...");
             }
         };
 
         profilePictureView = (ProfilePictureView) findViewById(R.id.splashProfilePicture);
 
-        updateProfilePicture();
+        updateProfile();
 
     }
 
@@ -104,20 +103,25 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    private void updateProfilePicture() {
+    private void updateProfile() {
         Profile profile = Profile.getCurrentProfile();
 
         if (profile != null) {
             profilePictureView.setProfileId(profile.getId());
             continueButton.setVisibility(View.VISIBLE);
+            GeoSingleton.getInstance().setProfileId(profile.getId());
+            GeoSingleton.getInstance().setProfileName(profile.getName());
         } else {
             profilePictureView.setProfileId(null);
             continueButton.setVisibility(View.INVISIBLE);
+            GeoSingleton.getInstance().setProfileId(null);
+            GeoSingleton.getInstance().setProfileName(null);
         }
     }
 
     public void onContinue(View view) {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        //Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        Intent intent = new Intent(SplashActivity.this, NavigationDrawerActivity.class);
         startActivity(intent);
         overridePendingTransition(0, 0);
         finish();

@@ -50,6 +50,7 @@ public class GeoGPSManager {
         @Override
         public void onLocationChanged(Location location) {
             ((GeoGPSHandler) context).onGPSLocationChanged(location);
+            setCurrentLocation(location);
             azimuthDegree = - getBearing();
         }
 

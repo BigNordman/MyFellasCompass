@@ -38,8 +38,6 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d("LOG","test!!!!!");
-
         /* facebook login */
         FacebookSdk.sdkInitialize(getApplicationContext());
         fbCallbackManager = CallbackManager.Factory.create();
@@ -120,7 +118,6 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void onContinue(View view) {
-        //Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         Intent intent = new Intent(SplashActivity.this, NavigationDrawerActivity.class);
         startActivity(intent);
         overridePendingTransition(0, 0);

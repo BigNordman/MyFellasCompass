@@ -1,7 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -12,4 +11,24 @@
     android:layout_height="match_parent"
     tools:context="com.nordman.big.myfellowcompass.ViewMapFragment" />
 
-</LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dip"
+        android:padding="2dip"
+        android:layout_gravity="center_horizontal|bottom"
+        android:background="@color/colorPrimaryOpacity"
+        android:backgroundTint="#bfadad"
+        android:backgroundTintMode="src_over">
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/mapPersonSelector"
+            android:src="@drawable/mystman_round" />
+
+    </LinearLayout>
+
+</FrameLayout>

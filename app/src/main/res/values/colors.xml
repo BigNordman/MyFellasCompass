@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0F357E</color>
+    <color name="colorPrimary">@color/com_facebook_blue</color>
     <color name="colorPrimaryDark">#061533</color>
+    <color name="colorPrimaryOpacity">#913B5998</color>
     <color name="colorAccent">#FF4081</color>
     <color name="actionbarColorText">#ffffff</color>
     <color name="black_overlay">#660000</color>

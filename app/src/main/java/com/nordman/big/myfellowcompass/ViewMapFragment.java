@@ -1,7 +1,6 @@
 package com.nordman.big.myfellowcompass;
 
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -13,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.blunderer.materialdesignlibrary.fragments.AFragment;
 import com.facebook.AccessToken;
@@ -40,6 +40,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private PersonOnMap toDraw = null;
     private Marker meMarker = null;
+    private ImageView personSelector = null;
 
 
     public ViewMapFragment() {
@@ -56,6 +57,14 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        personSelector = (ImageView) getActivity().findViewById(R.id.mapPersonSelector);
+        personSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("LOG","...select person stub...");
+            }
+        });
+
         Log.d("LOG","...onViewCreated...");
 
         setUpMapIfNeeded();
@@ -125,7 +134,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         // Do the long-running work in here
         protected Bitmap doInBackground(PersonOnMap... person) {
             Bitmap result = null;
-            URL imgUrl = null;
+            URL imgUrl;
             try {
                 imgUrl = new URL("https://graph.facebook.com/" + person[0].getId() + "/picture?type=normal" );
 
@@ -149,6 +158,10 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                     .position(myLatLng)
                     .title(toDraw.getId())
                     .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+
+            //test (working)
+            //personSelector.setImageBitmap(roundPict);
+
             if (toDraw == me) {
                 Float zoomRate = 16.0f;
 

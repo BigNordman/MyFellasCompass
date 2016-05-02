@@ -13,6 +13,7 @@ public class GeoSingleton {
     private String profileId;
     private String profileName;
     private PersonOnMap meOnMap;
+    private PersonOnMap himOnMap;
 
     public static GeoSingleton getInstance() {
         if(ourInstance == null)
@@ -71,5 +72,13 @@ public class GeoSingleton {
 
     public void setMeOnMap(PersonOnMap meOnMap) {
         this.meOnMap = meOnMap;
+    }
+
+    public PersonOnMap getHimOnMap() {
+        return himOnMap;
+    }
+
+    public void setHimOnMap(PersonOnMap himOnMap) {
+        this.himOnMap = himOnMap;
     }
 }

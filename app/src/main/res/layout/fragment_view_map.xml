@@ -19,7 +19,7 @@
         android:layout_marginBottom="25dip"
         android:padding="2dip"
         android:layout_gravity="center_horizontal|bottom"
-        android:background="@color/colorPrimaryOpacity"
+        android:background="@color/color_primary_opacity"
         android:backgroundTint="#bfadad"
         android:backgroundTintMode="src_over">
 

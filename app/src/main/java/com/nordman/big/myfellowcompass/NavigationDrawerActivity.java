@@ -120,7 +120,11 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
 
     @Override
     public void onGeoEndpointGet(GeoBean geoBean) {
-
+        if (GeoSingleton.getInstance().getPersonBearingManager()!=null) {
+            GeoSingleton.getInstance().getPersonBearingManager().setGeoBean(geoBean);
+            Log.d("LOG", "geoBean: " + geoBean.toString());
+            mapFragment.showHimOnMap();
+        }
     }
 
     @Override

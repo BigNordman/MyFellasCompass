@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="4dp">
+
+<com.facebook.login.widget.ProfilePictureView
+    android:id="@+id/profilePicture"
+    android:layout_height="40dp"
+    android:layout_width="40dp"
+    android:layout_marginRight="8dp"
+    facebook:com_facebook_preset_size="normal" />
+
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/label"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:textSize="@dimen/listview_row_title_size"
+    android:minHeight="@dimen/listview_row_height"
+    android:paddingLeft="@dimen/listview_row_title_padding"
+    android:paddingRight="@dimen/listview_row_title_padding"/>
+</LinearLayout>
+

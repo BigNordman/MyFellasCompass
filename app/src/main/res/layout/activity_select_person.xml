@@ -10,7 +10,7 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background = "@color/colorPrimary"
+        android:background = "@color/color_primary"
         android:paddingTop="@dimen/appbar_padding_top"
         android:paddingBottom="@dimen/appbar_padding_bottom"
         android:layout_alignParentTop="true"

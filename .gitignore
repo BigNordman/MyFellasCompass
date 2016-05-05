@@ -1,13 +1,21 @@
 *.gradle
+
+# ignore all iml files in all subdirectories
 *.iml
+
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
 /.idea/inspectionProfiles
 .DS_Store
+
+#ignore all build subdirectories
 /build
 /backend/build
 /app/build
 /library/build
+
 /captures
+
+# ignore google maps key cause it depends on local studio settings
 /app/src/debug/res/values/googe_maps_api.xml

@@ -6,6 +6,7 @@
 /.idea/inspectionProfiles
 .DS_Store
 /build
+/app/build
 /backend/build
 /captures
 /app/src/debug/res/values/googe_maps_api.xml

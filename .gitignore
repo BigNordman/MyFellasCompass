@@ -1,5 +1,5 @@
-.gradle
-.iml
+*.gradle
+*.iml
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
@@ -7,6 +7,7 @@
 .DS_Store
 /build
 /backend/build
+/app/build
+/library/build
 /captures
 /app/src/debug/res/values/googe_maps_api.xml
-/library/build

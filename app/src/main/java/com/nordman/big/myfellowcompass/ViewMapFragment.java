@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.blunderer.materialdesignlibrary.fragments.AFragment;
@@ -35,6 +36,8 @@ import org.json.JSONException;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -73,6 +76,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                     PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
                     GeoSingleton.getInstance().setHimOnMap(him);
                 }
+                //showMeOnMap();
 
                 GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.ACTIVE_MODE);
 
@@ -118,7 +122,20 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
 
             }
         });
+/*
+        Button test = (Button)getActivity().findViewById(R.id.buttonTest);
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (meMarker!=null) {
+                    Log.d("LOG","...me position = " + meMarker.getPosition().toString());
+                    Log.d("LOG","...me singleton = " + GeoSingleton.getInstance().getMeOnMap().getLat() + "," + GeoSingleton.getInstance().getMeOnMap().getLon());
+                }
+                if (himMarker!=null) Log.d("LOG","...him position = " + himMarker.getPosition().toString());
 
+            }
+        });
+*/
         Log.d("LOG","...onViewCreated...");
 
         setUpMapIfNeeded();
@@ -152,6 +169,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         showMeOnMap();
     }
 
+
     public void showMeOnMap() {
         final PersonOnMap me = GeoSingleton.getInstance().getMeOnMap();
         if ((mMap != null) && (me != null)){
@@ -172,14 +190,14 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                                 }
                             }
                     ).executeAsync();
-                    Log.d("LOG","...create marker...");
+                    Log.d("LOG","...create me marker...");
                 } else {
                     // move existing marker
                     meMarker.setPosition(new LatLng(me.getLat(), me.getLon()));
-                    Log.d("LOG","...move marker...");
+                    Log.d("LOG","...move me marker...");
                 }
             } else {
-                Log.d("LOG","...person is not moving...");
+                Log.d("LOG","...me is not moving...");
             }
         }
     }
@@ -189,6 +207,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         final PersonOnMap him = GeoSingleton.getInstance().getHimOnMap();
         Location personLoc = GeoSingleton.getInstance().getPersonBearingManager().getPersonLocation();
         him.setLocation(personLoc);
+        him.setLastTime(GeoSingleton.getInstance().getPersonBearingManager().getPersonLastTime());
 
         if ((mMap != null) && (him != null)) {
             Log.d("LOG", "...ViewMapFragment.showHimOnMap...");
@@ -207,14 +226,14 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                                 }
                             }
                     ).executeAsync();
-                    Log.d("LOG","...create marker...");
+                    Log.d("LOG","...create him marker...");
                 } else {
                     // move existing marker
-                    meMarker.setPosition(new LatLng(him.getLat(), him.getLon()));
-                    Log.d("LOG","...move marker...");
+                    himMarker.setPosition(new LatLng(him.getLat(), him.getLon()));
+                    Log.d("LOG","...move him marker... marker isVisible=" + meMarker.isVisible());
                 }
             } else {
-                Log.d("LOG","...person is not moving...");
+                Log.d("LOG","...him is not moving...");
             }
 
         }
@@ -244,57 +263,64 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
             PersonOnMap me = GeoSingleton.getInstance().getMeOnMap();
             Bitmap roundPict = Util.getCroppedBitmap(result);
             LatLng myLatLng = new LatLng(toDraw.getLat(), toDraw.getLon());
+            Float zoomRate = 16.0f;
 
 
             //test (working)
             //personSelector.setImageBitmap(roundPict);
 
             if (toDraw == me) {
+                Log.d("LOG","...me on map...");
                 meMarker = mMap.addMarker(new MarkerOptions()
                         .position(myLatLng)
-                        .title(toDraw.getId())
+                        .title(toDraw.getName())
                         .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
 
-                Float zoomRate = 16.0f;
-
-
-                if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId() != null) {
-                    float distance = GeoSingleton.getInstance().getPersonBearingManager().getDistance();
-                    if (distance < 200) {
-                        zoomRate = 16.0f;
-                    } else if (distance < 800) {
-                        zoomRate = 14.0f;
-                    }
-                    else if (distance < 3500) {
-                        zoomRate = 12.0f;
-                    }
-                    else if (distance < 15000) {
-                        zoomRate = 10.0f;
-                    }
-                    else if (distance < 60000) {
-                        zoomRate = 8.0f;
-                    }
-                    else if (distance < 220000) {
-                        zoomRate = 6.0f;
-                    }
-                    else if (distance < 750000) {
-                        zoomRate = 4.0f;
-                    }
-                    else {
-                        zoomRate = 3.0f;
-                    }
-                }
-
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, zoomRate));
 
                 //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 12.0f));
             } else {
                 Log.d("LOG","...him on map...");
+                personSelector.setImageBitmap(roundPict);
+
                 himMarker = mMap.addMarker(new MarkerOptions()
                         .position(myLatLng)
-                        .title(toDraw.getId())
+                        .title(toDraw.getName())
+                        .snippet(String.valueOf(toDraw.getLastTime()))
                         .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+
             }
+
+            if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId() != null) {
+                float distance = GeoSingleton.getInstance().getPersonBearingManager().getDistance();
+                if (distance < 200) {
+                    zoomRate = 16.0f;
+                } else if (distance < 800) {
+                    zoomRate = 14.0f;
+                }
+                else if (distance < 3500) {
+                    zoomRate = 12.0f;
+                }
+                else if (distance < 15000) {
+                    zoomRate = 10.0f;
+                }
+                else if (distance < 60000) {
+                    zoomRate = 8.0f;
+                }
+                else if (distance < 220000) {
+                    zoomRate = 6.0f;
+                }
+                else if (distance < 750000) {
+                    zoomRate = 4.0f;
+                }
+                else {
+                    zoomRate = 3.0f;
+                }
+            }
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, zoomRate));
+
         }
+
     }
+
 }

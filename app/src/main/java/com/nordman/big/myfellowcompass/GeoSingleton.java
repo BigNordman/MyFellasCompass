@@ -1,10 +1,20 @@
 package com.nordman.big.myfellowcompass;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+
+import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
+
 /**
  * Created by Sergey on 21.04.2016.
  *
  */
 public class GeoSingleton {
+    public static final long TIMER_INTERVAL = 30000;
     private static GeoSingleton ourInstance = null;
 
     private GeoEndpointManager geoEndpointManager = null;
@@ -14,6 +24,7 @@ public class GeoSingleton {
     private String profileName;
     private PersonOnMap meOnMap;
     private PersonOnMap himOnMap;
+    Timer timer = null;
 
     public static GeoSingleton getInstance() {
         if(ourInstance == null)
@@ -23,8 +34,57 @@ public class GeoSingleton {
         return ourInstance;
     }
 
-    private GeoSingleton() {
+    public void stopTimer(){
+        if (timer !=null) {
+            timer.cancel();
+            timer = null;
+        }
     }
+
+    private GeoSingleton() {
+        if (timer ==null){
+            timer = new Timer();
+            timer.schedule(new UpdateTimerTask(), 0, TIMER_INTERVAL); //тикаем каждую секунду
+        }
+
+    }
+
+    public void clear() {
+        getGeoEndpointManager().destroy();
+        setGeoEndpointManager(null);
+        getGeoGPSManager().destroy();
+        setGeoGPSManager(null);
+        getPersonBearingManager().destroy();
+        setPersonBearingManager(null);
+        stopTimer();
+    }
+
+    private class UpdateTimerTask extends TimerTask {
+        public void run() {
+            timerHandler.sendEmptyMessage(0);
+        }
+    }
+
+    final Handler timerHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            Log.d("LOG","...timer tick...");
+
+            if (meOnMap != null) {
+                GeoBean geo = new GeoBean();
+                geo.setId(Long.valueOf(meOnMap.getId()));
+                geo.setLat(meOnMap.getLat());
+                geo.setLon(meOnMap.getLon());
+                geo.setExtra(String.valueOf(new Date().getTime()));
+                if (geoEndpointManager != null) {
+                    geoEndpointManager.saveGeo(geo);
+                    Log.d("LOG","...me saved in cloud...");
+                }
+            }
+
+            return false;
+        }
+    });
 
     public GeoEndpointManager getGeoEndpointManager() {
         return geoEndpointManager;

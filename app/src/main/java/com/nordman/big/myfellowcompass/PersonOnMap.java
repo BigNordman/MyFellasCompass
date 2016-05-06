@@ -31,6 +31,7 @@ public class PersonOnMap implements Serializable {
     private Double lon;
     private Double prevLat = 0d;
     private Double prevLon = 0d;
+    private long lastTime = 0;
 
     public PersonOnMap(String id, String name) {
         this.id = id;
@@ -66,6 +67,14 @@ public class PersonOnMap implements Serializable {
         this.prevLon = lon;
         this.lat = location.getLatitude();
         this.lon= location.getLongitude();
+    }
+
+    public long getLastTime() {
+        return lastTime;
+    }
+
+    public void setLastTime(long lastTime) {
+        this.lastTime = lastTime;
     }
 
     public boolean isMoved() {

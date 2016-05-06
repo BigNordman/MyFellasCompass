@@ -101,4 +101,13 @@ public class PersonBearingManager {
         return result;
     }
 
+    public long getPersonLastTime(){
+        if (geoBean == null) return 0;
+        else return Long.parseLong(geoBean.getExtra());
+    }
+
+    public void destroy() {
+        geoBean = null;
+        context = null;
+    }
 }

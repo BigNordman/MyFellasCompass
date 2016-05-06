@@ -184,4 +184,13 @@ public class GeoGPSManager {
 
         return result;
     }
+
+    public void destroy() {
+        stopLocating();
+        locationManager = null;
+        prevTimeLoc = null;
+        curTimeLoc= null;
+        context = null;
+    }
+
 }

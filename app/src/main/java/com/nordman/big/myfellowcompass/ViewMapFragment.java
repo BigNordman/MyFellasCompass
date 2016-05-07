@@ -1,6 +1,7 @@
 package com.nordman.big.myfellowcompass;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.blunderer.materialdesignlibrary.activities.*;
 import com.blunderer.materialdesignlibrary.fragments.AFragment;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -70,6 +72,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
             } else {
 
                 GeoSingleton.getInstance().getPersonBearingManager().setPersonId(data.getStringExtra("id"));
+                GeoSingleton.getInstance().getPersonBearingManager().setPersonName(data.getStringExtra("name"));
                 GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
 
                 if (GeoSingleton.getInstance().getHimOnMap() == null) {
@@ -91,6 +94,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         Log.d("LOG","...onCreateView...");
         return inflater.inflate(R.layout.fragment_view_map, container, false);
+
     }
 
     @Override
@@ -122,23 +126,26 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
 
             }
         });
-/*
-        Button test = (Button)getActivity().findViewById(R.id.buttonTest);
-        test.setOnClickListener(new View.OnClickListener() {
+
+        ImageView imageCompass = (ImageView)getActivity().findViewById(R.id.mapCompass);
+        imageCompass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (meMarker!=null) {
-                    Log.d("LOG","...me position = " + meMarker.getPosition().toString());
-                    Log.d("LOG","...me singleton = " + GeoSingleton.getInstance().getMeOnMap().getLat() + "," + GeoSingleton.getInstance().getMeOnMap().getLon());
-                }
-                if (himMarker!=null) Log.d("LOG","...him position = " + himMarker.getPosition().toString());
-
+                ((NavigationDrawerActivity) getActivity()).performNavigationDrawerItemClick(1);
             }
         });
-*/
-        Log.d("LOG","...onViewCreated...");
 
         setUpMapIfNeeded();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mMap.clear();
+        mMap = null;
+        meMarker = null;
+        himMarker = null;
+        Log.d("LOG","...onDetach...");
     }
 
     private void setUpMapIfNeeded() {
@@ -154,6 +161,14 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         mMap = googleMap;
         Log.d("LOG","...onMapReady...");
         showMeOnMap();
+        if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId() != null) {
+            if (GeoSingleton.getInstance().getHimOnMap() == null) {
+                PersonOnMap him = new PersonOnMap(GeoSingleton.getInstance().getPersonBearingManager().getPersonId(),GeoSingleton.getInstance().getPersonBearingManager().getPersonName());
+                GeoSingleton.getInstance().setHimOnMap(him);
+            }
+            showHimOnMap();
+            Log.d("LOG","him!!!");
+        }
     }
 
     public void onGPSLocationChanged(Location location) {
@@ -285,7 +300,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 himMarker = mMap.addMarker(new MarkerOptions()
                         .position(myLatLng)
                         .title(toDraw.getName())
-                        .snippet(String.valueOf(toDraw.getLastTime()))
+                        .snippet(getString(R.string.he_was_here) + toDraw.getLastTimeFormatted())
                         .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
 
             }

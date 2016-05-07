@@ -18,6 +18,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by s_vershinin on 20.04.2016.
@@ -71,6 +73,11 @@ public class PersonOnMap implements Serializable {
 
     public long getLastTime() {
         return lastTime;
+    }
+
+    public String getLastTimeFormatted(){
+        DateFormat sdf = DateFormat.getDateTimeInstance();
+        return sdf.format(lastTime);
     }
 
     public void setLastTime(long lastTime) {

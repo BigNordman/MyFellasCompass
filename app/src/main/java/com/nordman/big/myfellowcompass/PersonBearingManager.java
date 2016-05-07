@@ -13,6 +13,7 @@ import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 public class PersonBearingManager {
     private Context context;
     private String personId;
+    private String personName;
     private GeoBean geoBean;
     private Float azimuthDegree = 0f;
     private Float currentDegree = 0f;
@@ -27,6 +28,14 @@ public class PersonBearingManager {
 
     public String getPersonId() {
         return personId;
+    }
+
+    public String getPersonName() {
+        return personName;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
     }
 
     public void setGeoBean(GeoBean geoBean) {

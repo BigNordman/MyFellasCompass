@@ -20,6 +20,13 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
         implements GeoEndpointHandler, GeoGPSHandler{
 
     ViewMapFragment mapFragment;
+    public ViewCompassFragment compassFragment;
+
+    @Override
+    public void performNavigationDrawerItemClick(int position) {
+        super.performNavigationDrawerItemClick(position);
+        Log.d("LOG","DrawerItemClick - " + position);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +37,6 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
         /* endpoint manager */
         if (GeoSingleton.getInstance().getGeoEndpointManager() == null) {
             GeoSingleton.getInstance().setGeoEndpointManager(new GeoEndpointManager(this));
-            //endpointMgr = new GeoEndpointManager(this);
             Log.d("LOG", "...GeoEndpointManager created...");
         }
 
@@ -83,8 +89,10 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
     @Override
     public NavigationDrawerTopHandler getNavigationDrawerTopHandler() {
         mapFragment = new ViewMapFragment();
+        compassFragment = new ViewCompassFragment();
         return new NavigationDrawerTopHandler(this)
-            .addItem(R.string.fragment_map, mapFragment);
+            .addItem(R.string.fragment_map, mapFragment)
+            .addItem(R.string.fragment_compass, compassFragment);
     }
 
     @Override
@@ -154,15 +162,6 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
         super.onDestroy();
         AppEventsLogger.deactivateApp(this);
         GeoSingleton.getInstance().clear();
-        /*
-        GeoSingleton.getInstance().getGeoEndpointManager().destroy();
-        GeoSingleton.getInstance().setGeoEndpointManager(null);
-        GeoSingleton.getInstance().getGeoGPSManager().destroy();
-        GeoSingleton.getInstance().setGeoGPSManager(null);
-        GeoSingleton.getInstance().getPersonBearingManager().destroy();
-        GeoSingleton.getInstance().setPersonBearingManager(null);
-        GeoSingleton.getInstance().stopTimer();
-        */
         Log.d("LOG","...onDestroy...");
     }
 

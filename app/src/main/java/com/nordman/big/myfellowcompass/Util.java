@@ -33,8 +33,8 @@ public class Util {
         c.drawBitmap(bitmap, 4, 4, p);
         p.setXfermode(null);
         p.setStyle(Paint.Style.STROKE);
-        p.setColor(Color.DKGRAY);
-        p.setStrokeWidth(3);
+        p.setColor(Color.WHITE);
+        p.setStrokeWidth(5);
         c.drawCircle((w / 2) + 4, (h / 2) + 4, radius, p);
 
         return output;

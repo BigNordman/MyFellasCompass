@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.nordman.big.myfellowcompass.ViewCompassFragment"
+    android:background="@drawable/background">
+
+    <ImageView
+        android:id="@+id/imageViewCompass"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:src="@drawable/compass"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        />
+
+    <ImageView
+        android:id="@+id/imageViewArrow"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:src="@drawable/arrow"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dip"
+        android:padding="2dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:gravity="center_vertical"
+        android:background="@color/color_primary_opacity"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/mapPersonSelector"
+            android:src="@drawable/mystman_round" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingLeft="10dp">
+            <ImageView
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:id="@+id/compassMap"
+                android:src="@drawable/map_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+
+                android:text="Map"
+                android:id="@+id/textView2"
+                android:textColor="@color/carbon_white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

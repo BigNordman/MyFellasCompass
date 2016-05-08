@@ -8,6 +8,43 @@
     tools:context="com.nordman.big.myfellowcompass.ViewCompassFragment"
     android:background="@drawable/background">
 
+    <LinearLayout
+        android:id="@+id/layoutDistance"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dip"
+        android:padding="2dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:gravity="center_vertical|center_horizontal"
+        android:background="@color/color_primary_opacity"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/distance_to_person"
+            android:id="@+id/textDistanceTitle"
+            android:textColor="@color/carbon_white"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="60sp"
+            android:id="@+id/textDistance"
+            android:textColor="@color/carbon_white"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/textExtra"
+            android:textColor="@color/carbon_white" />
+
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/imageViewCompass"
         android:layout_width="400dp"
@@ -24,6 +61,7 @@
         android:src="@drawable/arrow"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:visibility="gone"
         />
 
     <LinearLayout
@@ -62,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
 
-                android:text="Map"
+                android:text="@string/map"
                 android:id="@+id/textView2"
                 android:textColor="@color/carbon_white" />
 

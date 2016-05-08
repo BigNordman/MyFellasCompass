@@ -149,6 +149,7 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
     @Override
     public void onGPSLocationChanged(Location location) {
         mapFragment.onGPSLocationChanged(location);
+        compassFragment.onGPSLocationChanged(location);
     }
 
     @Override

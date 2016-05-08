@@ -56,6 +56,8 @@ public class GeoSingleton {
         setGeoGPSManager(null);
         getPersonBearingManager().destroy();
         setPersonBearingManager(null);
+        setMeOnMap(null);
+        setHimOnMap(null);
         stopTimer();
     }
 

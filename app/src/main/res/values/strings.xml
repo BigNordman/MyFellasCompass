@@ -26,5 +26,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="he_was_here">"was here at "</string>
     <string name="fragment_compass">Compass</string>
+    <string name="map">Map</string>
+    <string name="distance_to_person">DISTANCE TO PERSON</string>
+    <string name="distance_value">%1$s km</string>
 
 </resources>

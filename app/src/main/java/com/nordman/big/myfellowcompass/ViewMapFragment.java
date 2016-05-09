@@ -286,10 +286,15 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
 
             if (toDraw == me) {
                 Log.d("LOG","...me on map...");
-                meMarker = mMap.addMarker(new MarkerOptions()
-                        .position(myLatLng)
-                        .title(toDraw.getName())
-                        .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+
+                try {
+                    meMarker = mMap.addMarker(new MarkerOptions()
+                            .position(myLatLng)
+                            .title(toDraw.getName())
+                            .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
                 //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 12.0f));
@@ -297,11 +302,15 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 Log.d("LOG","...him on map...");
                 personSelector.setImageBitmap(roundPict);
 
-                himMarker = mMap.addMarker(new MarkerOptions()
-                        .position(myLatLng)
-                        .title(toDraw.getName())
-                        .snippet(getString(R.string.he_was_here) + toDraw.getLastTimeFormatted())
-                        .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+                try {
+                    himMarker = mMap.addMarker(new MarkerOptions()
+                            .position(myLatLng)
+                            .title(toDraw.getName())
+                            .snippet(getString(R.string.he_was_here) + toDraw.getLastTimeFormatted())
+                            .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
 
@@ -332,7 +341,11 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 }
             }
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, zoomRate));
+            try {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, zoomRate));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
 

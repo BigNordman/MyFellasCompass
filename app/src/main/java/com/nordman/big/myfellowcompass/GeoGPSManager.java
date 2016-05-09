@@ -142,7 +142,7 @@ public class GeoGPSManager {
             Location location = locationManager.getLastKnownLocation(gpsProvider);
             ((GeoGPSHandler) context).onGPSLocationChanged(location);
 
-            locationManager.requestLocationUpdates(gpsProvider, 10000, 10, locationListener);
+            locationManager.requestLocationUpdates(gpsProvider, 3000, 3, locationListener);
         }
     }
 

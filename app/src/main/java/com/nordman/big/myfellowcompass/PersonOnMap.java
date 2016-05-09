@@ -67,8 +67,10 @@ public class PersonOnMap implements Serializable {
     public void setLocation(Location location) {
         this.prevLat = lat;
         this.prevLon = lon;
-        this.lat = location.getLatitude();
-        this.lon= location.getLongitude();
+        if (location != null) {
+            this.lat = location.getLatitude();
+            this.lon = location.getLongitude();
+        }
     }
 
     public long getLastTime() {

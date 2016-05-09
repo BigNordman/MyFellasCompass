@@ -52,20 +52,28 @@ public class SplashActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancel() {
-                        Log.d("LOG", "login cancelled");
-                        showAlert();
+                        Log.d("LOG", getString(R.string.facebook_login_cancelled));
+                        showAlert( R.string.cancelled, R.string.facebook_login_cancelled);
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        Log.d("LOG", "Login error" + exception.getLocalizedMessage());
-                        showAlert();
+                        Log.d("LOG", getString(R.string.login_error) + exception.getLocalizedMessage());
+                        showAlert(R.string.login_error,R.string.something_went_wrong);
                     }
 
                     private void showAlert() {
                         new AlertDialog.Builder(SplashActivity.this)
                                 .setTitle(R.string.cancelled)
                                 .setMessage(R.string.permission_not_granted)
+                                .setPositiveButton(R.string.ok, null)
+                                .show();
+                    }
+
+                    private void showAlert(int pTitleId, int pMessageId) {
+                        new AlertDialog.Builder(SplashActivity.this)
+                                .setTitle(pTitleId)
+                                .setMessage(pMessageId)
                                 .setPositiveButton(R.string.ok, null)
                                 .show();
                     }
@@ -118,6 +126,18 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void onContinue(View view) {
+
+        if (!Util.isOnline(this)) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.connection_error)
+                    .setMessage(R.string.connection_is_not_available)
+                    .setPositiveButton(R.string.ok, null)
+                    .show();
+            continueButton.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+
         Intent intent = new Intent(SplashActivity.this, NavigationDrawerActivity.class);
         startActivity(intent);
         overridePendingTransition(0, 0);

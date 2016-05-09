@@ -43,5 +43,13 @@
         android:onClick="onContinue"
         android:layout_below="@+id/frameImageView"
         android:layout_centerHorizontal="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textExtra"
+        android:textColor="@color/carbon_white"
+        android:layout_below="@+id/continueButton"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

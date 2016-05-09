@@ -29,5 +29,10 @@
     <string name="map">Map</string>
     <string name="distance_to_person">DISTANCE TO PERSON</string>
     <string name="distance_value">%1$s km</string>
+    <string name="facebook_login_cancelled">Facebook login cancelled.</string>
+    <string name="connection_error">Connection error</string>
+    <string name="connection_is_not_available">Internet connection is not available</string>
+    <string name="login_error">Login error</string>
+    <string name="something_went_wrong">Something went wrong</string>
 
 </resources>

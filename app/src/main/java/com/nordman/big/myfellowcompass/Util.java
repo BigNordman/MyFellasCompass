@@ -1,11 +1,14 @@
 package com.nordman.big.myfellowcompass;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 /**
  * Created by s_vershinin on 21.04.2016.
@@ -40,4 +43,9 @@ public class Util {
         return output;
     }
 
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
 }

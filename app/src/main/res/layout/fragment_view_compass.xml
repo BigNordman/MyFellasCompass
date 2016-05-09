@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dip"
+        android:layout_marginTop="20dip"
         android:padding="2dp"
         android:layout_gravity="center_horizontal|bottom"
         android:gravity="center_vertical|center_horizontal"
@@ -63,6 +63,18 @@
         android:layout_centerHorizontal="true"
         android:visibility="gone"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/gps_mode_required"
+        android:id="@+id/textGPSModeRequired"
+        android:textColor="@color/com_facebook_blue"
+        android:visibility="invisible"/>
+
 
     <LinearLayout
         android:orientation="horizontal"

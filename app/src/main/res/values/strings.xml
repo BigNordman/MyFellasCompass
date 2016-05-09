@@ -34,5 +34,6 @@
     <string name="connection_is_not_available">Internet connection is not available</string>
     <string name="login_error">Login error</string>
     <string name="something_went_wrong">Something went wrong</string>
+    <string name="gps_mode_required">GPS mode required</string>
 
 </resources>

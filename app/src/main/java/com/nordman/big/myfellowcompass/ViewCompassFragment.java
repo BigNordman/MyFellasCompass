@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -216,11 +217,15 @@ public class ViewCompassFragment extends AFragment {
         @Override
         public boolean handleMessage(Message msg) {
             double curSpeed = GeoSingleton.getInstance().getGeoGPSManager().getSpeed();
-            //Log.d("LOG","...curSpeed = " + curSpeed);
+            String provider = GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider();
 
-            if (curSpeed < MIN_SPEED_FOR_ROTATION) {
+            Log.d("LOG","...provider = " + GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider());
+
+
+            if ((curSpeed < MIN_SPEED_FOR_ROTATION) || (provider.equals("network"))) {
                 ((TextView) getActivity().findViewById(R.id.textExtra)).setText("...magnet rotation...");
 
+                // compass image
                 RotateAnimation raMagnet;
                 float[] degrees = magnetMgr.getRotateDegrees();
                 raMagnet = new RotateAnimation(
@@ -234,10 +239,20 @@ public class ViewCompassFragment extends AFragment {
                 raMagnet.setFillAfter(true);
                 imageCompass.startAnimation(raMagnet);
 
+                // arrow image
+                imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow_light));
+                if (provider.equals("network")){
+                    getActivity().findViewById(R.id.textGPSModeRequired).setVisibility(View.VISIBLE);
+                }
+
                 setPersonInfo();
 
                 return false;
             }
+
+
+            imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow));
+            getActivity().findViewById(R.id.textGPSModeRequired).setVisibility(View.INVISIBLE);
 
             ((TextView) getActivity().findViewById(R.id.textExtra)).setText("...gps rotation...");
             RotateAnimation ra;

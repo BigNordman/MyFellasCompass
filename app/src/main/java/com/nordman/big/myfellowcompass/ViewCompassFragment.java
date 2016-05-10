@@ -19,6 +19,7 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blunderer.materialdesignlibrary.fragments.AFragment;
 import com.facebook.AccessToken;
@@ -219,11 +220,11 @@ public class ViewCompassFragment extends AFragment {
             double curSpeed = GeoSingleton.getInstance().getGeoGPSManager().getSpeed();
             String provider = GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider();
 
-            Log.d("LOG","...provider = " + GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider());
+            //Log.d("LOG","...provider = " + GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider());
 
 
-            if ((curSpeed < MIN_SPEED_FOR_ROTATION) || (provider.equals("network"))) {
-                ((TextView) getActivity().findViewById(R.id.textExtra)).setText(R.string.magnet_rotation);
+            if  (provider.equals("network")) {
+                //((TextView) getActivity().findViewById(R.id.textExtra)).setText(R.string.magnet_rotation);
 
                 // compass image
                 RotateAnimation raMagnet;
@@ -242,24 +243,24 @@ public class ViewCompassFragment extends AFragment {
                 // arrow image
                 imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow_light));
                 if (GeoSingleton.getInstance().getHimOnMap()!=null) {
-                    if (provider.equals("network")){
-                        ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.gps_mode_required);
-                    } else {
-                        ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.keep_on_moving);
-                    }
+                    ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.gps_mode_required);
                 }
-
                 setPersonInfo();
-
                 return false;
             }
 
+            if (curSpeed < MIN_SPEED_FOR_ROTATION){
+                imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow_light));
+                ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.keep_on_moving);
+
+                setPersonInfo();
+                return false;
+            }
 
             ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText("");
             imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow));
-            getActivity().findViewById(R.id.textGPSModeRequired).setVisibility(View.INVISIBLE);
 
-            ((TextView) getActivity().findViewById(R.id.textExtra)).setText("...gps rotation...");
+            //((TextView) getActivity().findViewById(R.id.textExtra)).setText("...gps rotation...");
             RotateAnimation ra;
             float[] degrees = GeoSingleton.getInstance().getGeoGPSManager().getRotateDegrees();
             ra = new RotateAnimation(

@@ -59,9 +59,11 @@
         <activity
             android:name=".NavigationDrawerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".SelectPerson2Activity"
+        <activity
+            android:name=".SelectPerson2Activity"
             android:label="@string/select_person"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity android:name=".InviteFriendActivity"></activity>
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package com.nordman.big.myfellowcompass;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -92,7 +93,10 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
         compassFragment = new ViewCompassFragment();
         return new NavigationDrawerTopHandler(this)
             .addItem(R.string.fragment_map, mapFragment)
-            .addItem(R.string.fragment_compass, compassFragment);
+            .addItem(R.string.fragment_compass, compassFragment)
+            .addDivider()
+            .addItem(R.string.invite_friend,
+                        new Intent(getApplicationContext(), InviteFriendActivity.class));
     }
 
     @Override

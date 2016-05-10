@@ -81,13 +81,12 @@ public class PersonBearingManager {
     }
 
     public float getDistance(){
-        Log.d("LOG","...PersonBearingManager.getDistance...");
         Location myLocation = getMyLocation();
         Location personLocation = getPersonLocation();
 
         if (myLocation == null || personLocation == null) return -1;
 
-        Log.d("LOG","...PersonBearingManager.getDistance = " + myLocation.distanceTo(personLocation));
+        //Log.d("LOG","...PersonBearingManager.getDistance = " + myLocation.distanceTo(personLocation));
         return myLocation.distanceTo(personLocation);
     }
 
@@ -95,7 +94,7 @@ public class PersonBearingManager {
         Location result;
 
         result = GeoSingleton.getInstance().getGeoGPSManager().getCurrentLocation();
-        if (result != null) Log.d("LOG","...PersonBearingManager: My location = " + result.toString());
+        //if (result != null) Log.d("LOG","...PersonBearingManager: My location = " + result.toString());
         return result;
     }
 
@@ -107,7 +106,7 @@ public class PersonBearingManager {
         result.setLatitude(geoBean.getLat());
         result.setLongitude(geoBean.getLon());
 
-        Log.d("LOG","...PersonBearingManager: Person location = " + result.toString());
+        //Log.d("LOG","...PersonBearingManager: Person location = " + result.toString());
 
         return result;
     }

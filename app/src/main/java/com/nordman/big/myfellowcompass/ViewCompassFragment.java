@@ -223,7 +223,7 @@ public class ViewCompassFragment extends AFragment {
 
 
             if ((curSpeed < MIN_SPEED_FOR_ROTATION) || (provider.equals("network"))) {
-                ((TextView) getActivity().findViewById(R.id.textExtra)).setText("...magnet rotation...");
+                ((TextView) getActivity().findViewById(R.id.textExtra)).setText(R.string.magnet_rotation);
 
                 // compass image
                 RotateAnimation raMagnet;
@@ -241,8 +241,12 @@ public class ViewCompassFragment extends AFragment {
 
                 // arrow image
                 imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow_light));
-                if (provider.equals("network")){
-                    getActivity().findViewById(R.id.textGPSModeRequired).setVisibility(View.VISIBLE);
+                if (GeoSingleton.getInstance().getHimOnMap()!=null) {
+                    if (provider.equals("network")){
+                        ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.gps_mode_required);
+                    } else {
+                        ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.keep_on_moving);
+                    }
                 }
 
                 setPersonInfo();
@@ -251,6 +255,7 @@ public class ViewCompassFragment extends AFragment {
             }
 
 
+            ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText("");
             imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow));
             getActivity().findViewById(R.id.textGPSModeRequired).setVisibility(View.INVISIBLE);
 

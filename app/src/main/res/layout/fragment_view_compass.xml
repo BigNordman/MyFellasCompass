@@ -70,10 +70,10 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/gps_mode_required"
+        android:gravity="center_horizontal"
         android:id="@+id/textGPSModeRequired"
         android:textColor="@color/com_facebook_blue"
-        android:visibility="invisible"/>
+        android:visibility="visible"/>
 
 
     <LinearLayout

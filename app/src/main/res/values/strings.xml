@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">find facebook friend</string>
+    <string name="app_name">Find Friend</string>
     <string name="facebook_app_id">1719838634939657</string>
     <string name="facebook_user_info">%1$s : %2$s</string>
     <string name="cancelled">Cancelled</string>
@@ -14,16 +14,16 @@
     <string name="buddy_location_unknown">Your buddy\'s location is currently unknown.</string>
     <string name="title_activity_maps">Map</string>
 
+
+    <!--
     <string name="title_activity_splash">SplashActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-
-    <string name="title_activity_activityplash">Activityplash</string>
+    <string name="title_activity_activitysplash">ActivitySplash</string>
     <string name="continue_button">Continue</string>
-    <string name="fragment_map">Map</string>
+    -->
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_map">Map</string>
     <string name="he_was_here">"was here at "</string>
     <string name="fragment_compass">Compass</string>
     <string name="map">Map</string>
@@ -35,8 +35,8 @@
     <string name="login_error">Login error</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="gps_mode_required">GPS mode\nrequired</string>
-    <string name="magnet_rotation">...magnet rotation...</string>
-    <string name="keep_on_moving">Keep on\nmoving...</string>
+    <string name="magnet_rotation">…magnet rotation…</string>
+    <string name="keep_on_moving">Keep on\nmoving…</string>
     <string name="invite_friend">Invite friend</string>
 
 </resources>

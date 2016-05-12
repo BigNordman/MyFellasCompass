@@ -159,6 +159,7 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
     @Override
     public void onStart() {
         super.onStart();
+        GeoSingleton.getInstance().startTimer();
         AppEventsLogger.activateApp(this);
     }
 

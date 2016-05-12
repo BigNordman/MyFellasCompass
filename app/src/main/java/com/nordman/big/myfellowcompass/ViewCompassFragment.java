@@ -131,34 +131,35 @@ public class ViewCompassFragment extends AFragment {
 
         // check on SelectPerson result
         if (requestCode==1) {
-            if (data != null)
+            if (data != null) {
+                GeoSingleton.getInstance().getPersonBearingManager().setPersonId(data.getStringExtra("id"));
+                GeoSingleton.getInstance().getPersonBearingManager().setPersonName(data.getStringExtra("name"));
+                GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
 
-            GeoSingleton.getInstance().getPersonBearingManager().setPersonId(data.getStringExtra("id"));
-            GeoSingleton.getInstance().getPersonBearingManager().setPersonName(data.getStringExtra("name"));
-            GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
-
-            if (GeoSingleton.getInstance().getHimOnMap() == null) {
-                final PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
-                GeoSingleton.getInstance().setHimOnMap(him);
-                new GraphRequest(
-                        AccessToken.getCurrentAccessToken(),
-                        "/" + him.getId() + "/picture",
-                        null,
-                        HttpMethod.GET,
-                        new GraphRequest.Callback() {
-                            public void onCompleted(GraphResponse response) {
-                                new GetProfileImageTask().execute(him);
+                if (GeoSingleton.getInstance().getHimOnMap() == null) {
+                    final PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
+                    GeoSingleton.getInstance().setHimOnMap(him);
+                    new GraphRequest(
+                            AccessToken.getCurrentAccessToken(),
+                            "/" + him.getId() + "/picture",
+                            null,
+                            HttpMethod.GET,
+                            new GraphRequest.Callback() {
+                                public void onCompleted(GraphResponse response) {
+                                    new GetProfileImageTask().execute(him);
+                                }
                             }
-                        }
-                ).executeAsync();
+                    ).executeAsync();
+                }
+
+                GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.ACTIVE_MODE);
+                setPersonInfo();
             }
 
-            GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.ACTIVE_MODE);
 
             //Log.d("LOG","...person id = " + data.getStringExtra("id"));
             //Log.d("LOG","...me location = " + GeoSingleton.getInstance().getGeoGPSManager().getCurrentLocation().toString());
 
-            setPersonInfo();
         }
     }
 

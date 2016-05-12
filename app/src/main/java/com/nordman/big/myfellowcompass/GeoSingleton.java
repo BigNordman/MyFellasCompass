@@ -41,12 +41,16 @@ public class GeoSingleton {
         }
     }
 
-    private GeoSingleton() {
+    public void startTimer(){
         if (timer ==null){
             timer = new Timer();
             timer.schedule(new UpdateTimerTask(), 0, TIMER_INTERVAL); //тикаем каждую секунду
+            Log.d("LOG","...timer created...");
         }
+    }
 
+    private GeoSingleton() {
+        startTimer();
     }
 
     public void clear() {

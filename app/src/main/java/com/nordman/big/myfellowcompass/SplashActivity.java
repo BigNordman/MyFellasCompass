@@ -144,24 +144,4 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private class delayTask extends TimerTask {
-        public void run() {
-            delayHandler.sendEmptyMessage(0);
-        }
-    }
-    final Handler delayHandler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            delayTimer.cancel();
-            delayTimer = null;
-            Log.d("LOG","...after sleep...");
-
-            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
-            finish();
-
-            return false;
-        }
-    });
 }

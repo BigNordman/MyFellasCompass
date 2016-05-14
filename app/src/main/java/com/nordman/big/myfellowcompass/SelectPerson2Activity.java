@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.blunderer.materialdesignlibrary.handlers.ActionBarDefaultHandler;
 import com.blunderer.materialdesignlibrary.handlers.ActionBarHandler;
 import com.facebook.login.widget.ProfilePictureView;
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -157,4 +159,25 @@ public class SelectPerson2Activity extends com.blunderer.materialdesignlibrary.a
         }
     }
 
+    public void onInviteClick(View view) {
+        /*
+        Intent intent = new Intent(this, InviteFriendActivity.class);
+        startActivity(intent);
+        */
+        String appLinkUrl, previewImageUrl;
+
+        appLinkUrl = getString(R.string.fb_app_link);
+        //previewImageUrl = "https://www.mydomain.com/my_invite_image.jpg";
+
+        if (AppInviteDialog.canShow()) {
+            AppInviteContent content = new AppInviteContent.Builder()
+                    .setApplinkUrl(appLinkUrl)
+                    //.setPreviewImageUrl(previewImageUrl)
+                    .build();
+            AppInviteDialog.show(this, content);
+        } else {
+            Log.d("LOG","can't show invite dialog");
+        }
+
+    }
 }

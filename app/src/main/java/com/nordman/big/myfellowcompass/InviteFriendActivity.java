@@ -17,7 +17,7 @@ public class InviteFriendActivity extends com.blunderer.materialdesignlibrary.ac
 
         String appLinkUrl, previewImageUrl;
 
-        appLinkUrl = "https://play.google.com/store/apps/details?id=com.nordman.big.smsparking2";
+        appLinkUrl = getString(R.string.fb_app_link);
         //previewImageUrl = "https://www.mydomain.com/my_invite_image.jpg";
 
         if (AppInviteDialog.canShow()) {

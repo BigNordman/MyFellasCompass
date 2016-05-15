@@ -136,24 +136,23 @@ public class ViewCompassFragment extends AFragment {
                 GeoSingleton.getInstance().getPersonBearingManager().setPersonName(data.getStringExtra("name"));
                 GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
 
-                if (GeoSingleton.getInstance().getHimOnMap() == null) {
-                    final PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
-                    GeoSingleton.getInstance().setHimOnMap(him);
-                    new GraphRequest(
-                            AccessToken.getCurrentAccessToken(),
-                            "/" + him.getId() + "/picture",
-                            null,
-                            HttpMethod.GET,
-                            new GraphRequest.Callback() {
-                                public void onCompleted(GraphResponse response) {
-                                    new GetProfileImageTask().execute(him);
-                                }
+                final PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
+                GeoSingleton.getInstance().setHimOnMap(him);
+                new GraphRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        "/" + him.getId() + "/picture",
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                new GetProfileImageTask().execute(him);
                             }
-                    ).executeAsync();
-                }
+                        }
+                ).executeAsync();
 
                 GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.ACTIVE_MODE);
                 setPersonInfo();
+
             }
 
 
@@ -166,6 +165,8 @@ public class ViewCompassFragment extends AFragment {
 
     public void setPersonInfo(){
         if (GeoSingleton.getInstance().getHimOnMap()!=null) {
+            if (getActivity()==null) return;
+
             getActivity().findViewById(R.id.layoutDistance).setVisibility(View.VISIBLE);
             imageArrow.setVisibility(View.VISIBLE);
 
@@ -175,6 +176,8 @@ public class ViewCompassFragment extends AFragment {
                 NumberFormat f = NumberFormat.getInstance(getResources().getConfiguration().locale);
                 f.setMaximumFractionDigits(2);
                 textDistance.setText(getString(R.string.distance_value, f.format(distanceValue)));
+            } else {
+                getActivity().findViewById(R.id.layoutDistance).setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -219,6 +222,7 @@ public class ViewCompassFragment extends AFragment {
         @Override
         public boolean handleMessage(Message msg) {
             double curSpeed = GeoSingleton.getInstance().getGeoGPSManager().getSpeed();
+            double curDistance = GeoSingleton.getInstance().getPersonBearingManager().getDistance();
             String provider = GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider();
 
             //Log.d("LOG","...provider = " + GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider());
@@ -253,6 +257,14 @@ public class ViewCompassFragment extends AFragment {
             if (curSpeed < MIN_SPEED_FOR_ROTATION){
                 imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow_light));
                 ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.keep_on_moving);
+
+                setPersonInfo();
+                return false;
+            }
+
+            if (curDistance < 0){
+                imageArrow.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.arrow_light));
+                ((TextView) getActivity().findViewById(R.id.textGPSModeRequired)).setText(R.string.destination_undefined);
 
                 setPersonInfo();
                 return false;

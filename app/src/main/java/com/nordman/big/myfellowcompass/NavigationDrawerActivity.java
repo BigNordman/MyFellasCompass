@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.blunderer.materialdesignlibrary.handlers.ActionBarDefaultHandler;
 import com.blunderer.materialdesignlibrary.handlers.ActionBarHandler;
@@ -136,7 +137,16 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
         if (GeoSingleton.getInstance().getPersonBearingManager()!=null) {
             GeoSingleton.getInstance().getPersonBearingManager().setGeoBean(geoBean);
             Log.d("LOG", "geoBean: " + geoBean.toString());
+
+            if (geoBean.getLat()==null || geoBean.getLon()==null) {
+                Toast toast = Toast.makeText(this.getApplicationContext(),
+                        R.string.location_banned_by_friend, Toast.LENGTH_LONG);
+                toast.show();
+            }
+
+
             mapFragment.showHimOnMap();
+            compassFragment.setPersonInfo();
         }
     }
 

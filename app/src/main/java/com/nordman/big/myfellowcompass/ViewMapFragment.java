@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.blunderer.materialdesignlibrary.activities.*;
 import com.blunderer.materialdesignlibrary.fragments.AFragment;
@@ -70,16 +71,16 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.PASSIVE_MODE);
 
             } else {
-
+                if (himMarker != null) {
+                    himMarker.remove();
+                    himMarker = null;
+                }
                 GeoSingleton.getInstance().getPersonBearingManager().setPersonId(data.getStringExtra("id"));
                 GeoSingleton.getInstance().getPersonBearingManager().setPersonName(data.getStringExtra("name"));
                 GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
 
-                if (GeoSingleton.getInstance().getHimOnMap() == null) {
-                    PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
-                    GeoSingleton.getInstance().setHimOnMap(him);
-                }
-                //showMeOnMap();
+                PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
+                GeoSingleton.getInstance().setHimOnMap(him);
 
                 GeoSingleton.getInstance().getGeoGPSManager().setMode(GeoGPSManager.ACTIVE_MODE);
 
@@ -227,30 +228,26 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         if ((mMap != null) && (him != null)) {
             Log.d("LOG", "...ViewMapFragment.showHimOnMap...");
 
-            if ( him.isMoved()) {
-                if (himMarker == null) {
-                    // create new marker with facebook picture
-                    new GraphRequest(
-                            AccessToken.getCurrentAccessToken(),
-                            "/" + him.getId() + "/picture",
-                            null,
-                            HttpMethod.GET,
-                            new GraphRequest.Callback() {
-                                public void onCompleted(GraphResponse response) {
-                                    new GetProfileImageTask().execute(him);
-                                }
+            if (himMarker == null) {
+                // create new marker with facebook picture
+                new GraphRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        "/" + him.getId() + "/picture",
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                new GetProfileImageTask().execute(him);
                             }
-                    ).executeAsync();
-                    Log.d("LOG","...create him marker...");
-                } else {
+                        }
+                ).executeAsync();
+                Log.d("LOG","...create him marker...");
+            } else {
+                if ( him.isMoved()) {
                     // move existing marker
                     himMarker.setPosition(new LatLng(him.getLat(), him.getLon()));
-                    Log.d("LOG","...move him marker... marker isVisible=" + meMarker.isVisible());
                 }
-            } else {
-                Log.d("LOG","...him is not moving...");
             }
-
         }
 
     }
@@ -277,12 +274,19 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         protected void onPostExecute(Bitmap result) {
             PersonOnMap me = GeoSingleton.getInstance().getMeOnMap();
             Bitmap roundPict = Util.getCroppedBitmap(result);
+
+            if (toDraw != me) {
+                // draw his picture
+                personSelector.setImageBitmap(roundPict);
+            }
+
+            if ((toDraw.getLat()==null)||(toDraw.getLon()==null)) {
+                // coordinates undefined - do nothing
+                return;
+            }
+
             LatLng myLatLng = new LatLng(toDraw.getLat(), toDraw.getLon());
             Float zoomRate = 16.0f;
-
-
-            //test (working)
-            //personSelector.setImageBitmap(roundPict);
 
             if (toDraw == me) {
                 Log.d("LOG","...me on map...");
@@ -300,7 +304,6 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 12.0f));
             } else {
                 Log.d("LOG","...him on map...");
-                personSelector.setImageBitmap(roundPict);
 
                 try {
                     himMarker = mMap.addMarker(new MarkerOptions()

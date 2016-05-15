@@ -88,6 +88,12 @@ public class GeoSingleton {
                 }
             }
 
+            try {
+                getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return false;
         }
     });

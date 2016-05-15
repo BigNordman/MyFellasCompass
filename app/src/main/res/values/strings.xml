@@ -39,5 +39,7 @@
     <string name="keep_on_moving">Keep on\nmoving…</string>
     <string name="invite_friend">Invite friend</string>
     <string name="fb_app_link">https://fb.me/1750197465237107</string>
+    <string name="location_banned_by_friend">It seems that your friend does not want anyone to know about his/her location.</string>
+    <string name="destination_undefined">Destination undefined</string>
 
 </resources>

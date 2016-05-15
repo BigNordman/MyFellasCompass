@@ -101,6 +101,9 @@ public class PersonBearingManager {
     public Location getPersonLocation() {
         Location result;
         if (geoBean == null) return null;
+        if (geoBean.getLat()==null || geoBean.getLon()==null) {
+            return null;
+        }
 
         result = new Location("");
         result.setLatitude(geoBean.getLat());

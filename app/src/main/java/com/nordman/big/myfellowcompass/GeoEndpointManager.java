@@ -96,8 +96,9 @@ public class GeoEndpointManager {
 
             @Override
             protected GeoBean doInBackground(String... params) {
-                Long id = Long.parseLong(params[0]);
+                if (params[0] == null) return null;
 
+                Long id = Long.parseLong(params[0]);
                 try {
                     return geoApiService.get(id).execute();
                 } catch (IOException e) {

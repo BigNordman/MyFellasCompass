@@ -1,7 +1,6 @@
 package com.nordman.big.myfellowcompass;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,11 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.blunderer.materialdesignlibrary.activities.*;
 import com.blunderer.materialdesignlibrary.fragments.AFragment;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -39,9 +35,6 @@ import org.json.JSONException;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +46,9 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
     private Marker meMarker = null;
     private Marker himMarker = null;
     private ImageView personSelector = null;
+    public static final boolean ON = true;
+    public static final boolean OFF = false;
+
 
 
     public ViewMapFragment() {
@@ -136,6 +132,27 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
             }
         });
 
+
+        // TEST BUTTONS
+        // -------------------------------------------------------
+        /*
+        getActivity().findViewById((R.id.buttonTest)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTest(v);
+            }
+        });
+        getActivity().findViewById((R.id.buttonTest2)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTest2(v);
+            }
+        });
+        */
+        // -------------------------------------------------------
+        // END TEST BUTTONS
+
+
         setUpMapIfNeeded();
     }
 
@@ -191,29 +208,27 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         if ((mMap != null) && (me != null)){
             Log.d("LOG","...ViewMapFragment.showMeOnMap...");
 
-            // check if person is moving
-            if ( me.isMoved()) {
-                if (meMarker == null) {
-                    // create new marker with facebook picture
-                    new GraphRequest(
-                            AccessToken.getCurrentAccessToken(),
-                            "/" + me.getId() + "/picture",
-                            null,
-                            HttpMethod.GET,
-                            new GraphRequest.Callback() {
-                                public void onCompleted(GraphResponse response) {
-                                    new GetProfileImageTask().execute(me);
-                                }
+            if (meMarker == null) {
+                // create new marker with facebook picture
+                setProgressBarVisibility(View.VISIBLE);
+                new GraphRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        "/" + me.getId() + "/picture",
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                new GetProfileImageTask().execute(me);
                             }
-                    ).executeAsync();
-                    Log.d("LOG","...create me marker...");
-                } else {
-                    // move existing marker
-                    meMarker.setPosition(new LatLng(me.getLat(), me.getLon()));
-                    Log.d("LOG","...move me marker...");
-                }
+                        }
+                ).executeAsync();
+                Log.d("LOG","...create me marker...");
             } else {
-                Log.d("LOG","...me is not moving...");
+                // move existing marker
+                if ( me.isMoved()) {
+                    meMarker.setPosition(new LatLng(me.getLat(), me.getLon()));
+                    Log.d("LOG", "...move me marker...");
+                }
             }
         }
     }
@@ -230,6 +245,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
 
             if (himMarker == null) {
                 // create new marker with facebook picture
+                setProgressBarVisibility(View.VISIBLE);
                 new GraphRequest(
                         AccessToken.getCurrentAccessToken(),
                         "/" + him.getId() + "/picture",
@@ -292,10 +308,12 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 Log.d("LOG","...me on map...");
 
                 try {
+                    if (meMarker != null) meMarker.remove();
                     meMarker = mMap.addMarker(new MarkerOptions()
                             .position(myLatLng)
                             .title(toDraw.getName())
                             .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+                    setProgressBarVisibility(View.INVISIBLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -306,11 +324,13 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 Log.d("LOG","...him on map...");
 
                 try {
+                    if (himMarker != null) himMarker.remove();
                     himMarker = mMap.addMarker(new MarkerOptions()
                             .position(myLatLng)
                             .title(toDraw.getName())
-                            .snippet(getString(R.string.he_was_here) + toDraw.getLastTimeFormatted())
+                            .snippet(toDraw.getTimePassed(getContext()))
                             .icon(BitmapDescriptorFactory.fromBitmap(roundPict)));
+                    setProgressBarVisibility(View.INVISIBLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -352,6 +372,26 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
 
         }
 
+    }
+
+    public void onTest(View view) {
+        Log.d("LOG","...onTest()...");
+        /*
+        LatLng myLatLng = new LatLng(56.825923, 60.604668);
+        mMap.addMarker(new MarkerOptions()
+                .position(myLatLng));
+        */
+    }
+    public void onTest2(View view) {
+        //mMap.getM
+        Log.d("LOG","...onTest2()...");
+    }
+
+    private void setProgressBarVisibility(int visibility)
+    {
+        if (getActivity()==null) return;
+        getActivity().findViewById((R.id.imageProgressBar)).setVisibility(visibility);
+        getActivity().findViewById((R.id.progressBar)).setVisibility(visibility);
     }
 
 }

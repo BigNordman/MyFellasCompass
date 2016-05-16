@@ -108,6 +108,7 @@ public class ViewCompassFragment extends AFragment {
 
         final PersonOnMap him = GeoSingleton.getInstance().getHimOnMap();
         if (him != null) {
+            setProgressBarVisibility(View.VISIBLE);
             new GraphRequest(
                     AccessToken.getCurrentAccessToken(),
                     "/" + him.getId() + "/picture",
@@ -138,6 +139,7 @@ public class ViewCompassFragment extends AFragment {
 
                 final PersonOnMap him = new PersonOnMap(data.getStringExtra("id"),data.getStringExtra("name"));
                 GeoSingleton.getInstance().setHimOnMap(him);
+                setProgressBarVisibility(View.VISIBLE);
                 new GraphRequest(
                         AccessToken.getCurrentAccessToken(),
                         "/" + him.getId() + "/picture",
@@ -173,9 +175,12 @@ public class ViewCompassFragment extends AFragment {
             float distanceValue = GeoSingleton.getInstance().getPersonBearingManager().getDistance()/1000;
             if (distanceValue > 0) {
                 TextView textDistance = (TextView) getActivity().findViewById(R.id.textDistance);
+                TextView textExtra = (TextView) getActivity().findViewById(R.id.textExtra);
+                PersonOnMap him = GeoSingleton.getInstance().getHimOnMap();
                 NumberFormat f = NumberFormat.getInstance(getResources().getConfiguration().locale);
                 f.setMaximumFractionDigits(2);
                 textDistance.setText(getString(R.string.distance_value, f.format(distanceValue)));
+                textExtra.setText(him.getName() + " " + him.getTimePassed(getContext()));
             } else {
                 getActivity().findViewById(R.id.layoutDistance).setVisibility(View.INVISIBLE);
             }
@@ -221,6 +226,8 @@ public class ViewCompassFragment extends AFragment {
     final Handler compassTickHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
+            if (getContext() == null) return false;
+
             double curSpeed = GeoSingleton.getInstance().getGeoGPSManager().getSpeed();
             double curDistance = GeoSingleton.getInstance().getPersonBearingManager().getDistance();
             String provider = GeoSingleton.getInstance().getGeoGPSManager().getGPSProvider();
@@ -326,6 +333,7 @@ public class ViewCompassFragment extends AFragment {
         protected void onPostExecute(Bitmap result) {
             Bitmap roundPict = Util.getCroppedBitmap(result);
             personSelector.setImageBitmap(roundPict);
+            setProgressBarVisibility(View.INVISIBLE);
         }
 
     }
@@ -339,6 +347,13 @@ public class ViewCompassFragment extends AFragment {
             GeoSingleton.getInstance().getMeOnMap().setLocation(location);
         }
         //Log.d("LOG","...onGPSLocationChanged...");
+    }
+
+    private void setProgressBarVisibility(int visibility)
+    {
+        if (getActivity()==null) return;
+        getActivity().findViewById((R.id.imageProgressBar)).setVisibility(visibility);
+        getActivity().findViewById((R.id.progressBar)).setVisibility(visibility);
     }
 
 }

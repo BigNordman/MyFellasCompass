@@ -50,8 +50,38 @@
                 android:textColor="@color/carbon_white" />
 
         </LinearLayout>
-
+<!--
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test1"
+            android:id="@+id/buttonTest"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test2"
+            android:id="@+id/buttonTest2"
+            />
+-->
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:id="@+id/imageProgressBar"
+        android:layout_gravity="center_horizontal|top"
+        android:src="@drawable/abc_btn_switch_to_on_mtrl_00012"
+        android:visibility="invisible"/>
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:id="@+id/progressBar"
+        android:layout_gravity="center_horizontal|top"
+        android:visibility="invisible"
+        />
+
 
 
 </FrameLayout>

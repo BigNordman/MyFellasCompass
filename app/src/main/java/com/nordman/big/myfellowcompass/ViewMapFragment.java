@@ -21,6 +21,9 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.share.widget.MessageDialog;
+import com.facebook.share.widget.SendButton;
+import com.facebook.share.widget.ShareButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -49,7 +52,10 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
     public static final boolean ON = true;
     public static final boolean OFF = false;
 
-
+    private static final String EXTRA_PROTOCOL_VERSION = "com.facebook.orca.extra.PROTOCOL_VERSION";
+    private static final String EXTRA_APP_ID = "com.facebook.orca.extra.APPLICATION_ID";
+    private static final int PROTOCOL_VERSION = 20150314;
+    private static final int SHARE_TO_MESSENGER_REQUEST_CODE = 1;
 
     public ViewMapFragment() {
     }
@@ -138,29 +144,6 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 ((NavigationDrawerActivity) getActivity()).performNavigationDrawerItemClick(1);
             }
         });
-
-
-        // TEST BUTTONS
-        // -------------------------------------------------------
-        /*
-        getActivity().findViewById((R.id.buttonTest)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onTest(v);
-            }
-        });
-        getActivity().findViewById((R.id.buttonTest2)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onTest2(v);
-            }
-        });
-        */
-        // -------------------------------------------------------
-        // END TEST BUTTONS
-
-
-        setUpMapIfNeeded();
     }
 
     @Override

@@ -1,11 +1,11 @@
 package com.nordman.big.myfellowcompass;
 
-import android.app.Fragment;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.blunderer.materialdesignlibrary.handlers.ActionBarDefaultHandler;
@@ -24,6 +24,8 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
 
     ViewMapFragment mapFragment;
     public ViewCompassFragment compassFragment;
+
+    private boolean isModalDialogOpened = false;
 
     @Override
     public void performNavigationDrawerItemClick(int position) {
@@ -165,6 +167,27 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
     public void onGPSLocationChanged(Location location) {
         mapFragment.onGPSLocationChanged(location);
         compassFragment.onGPSLocationChanged(location);
+    }
+
+    @Override
+    public void onNoPosition() {
+        // what if GPS coorinates are unknown
+        if (isModalDialogOpened) return;
+
+        AlertDialog.Builder ad = new AlertDialog.Builder(this);
+
+        ad.setTitle(R.string.coordinates_are_unknown);  // заголовок
+        ad.setMessage(R.string.please_check_gps); // сообщение
+        ad.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                GeoSingleton.getInstance().getGeoGPSManager().stopLocating();
+                GeoSingleton.getInstance().getGeoGPSManager().startLocating();
+                NavigationDrawerActivity.this.isModalDialogOpened = false;
+            }
+        });
+        ad.setCancelable(false);
+        isModalDialogOpened = true;
+        ad.show();
     }
 
     @Override

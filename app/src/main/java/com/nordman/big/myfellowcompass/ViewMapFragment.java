@@ -55,6 +55,12 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().findViewById(R.id.mapPersonSelector).setEnabled(true);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -102,6 +108,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 Log.d("LOG","...select person stub...");
+                personSelector.setEnabled(false);
                 GraphRequestAsyncTask graphRequestAsyncTask = new GraphRequest(
                         AccessToken.getCurrentAccessToken(),
                         "/me/friends",
@@ -197,7 +204,11 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         } else {
             GeoSingleton.getInstance().getMeOnMap().setLocation(location);
         }
-        Log.d("LOG","...onGPSLocationChanged...");
+        if (location==null) {
+            Log.d("LOG", "...onGPSLocationChanged - location is null...");
+        } else {
+            Log.d("LOG", "...onGPSLocationChanged...lat=" + location.getLatitude() + " lon = " + location.getLongitude());
+        }
 
         showMeOnMap();
     }
@@ -288,6 +299,10 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
 
         // This is called when doInBackground() is finished
         protected void onPostExecute(Bitmap result) {
+            if (result == null) {
+                setProgressBarVisibility(View.INVISIBLE);
+                return;
+            }
             PersonOnMap me = GeoSingleton.getInstance().getMeOnMap();
             Bitmap roundPict = Util.getCroppedBitmap(result);
 

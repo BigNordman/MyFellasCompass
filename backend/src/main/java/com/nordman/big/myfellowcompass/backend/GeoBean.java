@@ -55,4 +55,5 @@ public class GeoBean {
     public void setLon(Double lon) {
         this.lon = lon;
     }
+
 }

@@ -24,6 +24,7 @@ public class GeoSingleton {
     private String profileName;
     private PersonOnMap meOnMap;
     private PersonOnMap himOnMap;
+    private int ticksNoPositioning = 0;
     Timer timer = null;
 
     public static GeoSingleton getInstance() {
@@ -77,14 +78,30 @@ public class GeoSingleton {
             Log.d("LOG","...timer tick...");
 
             if (meOnMap != null) {
-                GeoBean geo = new GeoBean();
-                geo.setId(Long.valueOf(meOnMap.getId()));
-                geo.setLat(meOnMap.getLat());
-                geo.setLon(meOnMap.getLon());
-                geo.setExtra(String.valueOf(new Date().getTime()));
-                if (geoEndpointManager != null) {
-                    geoEndpointManager.saveGeo(geo);
-                    Log.d("LOG","...me saved in cloud...");
+                if (meOnMap.getLat() == null) {
+                    // gps is not on. try to reconnect to GPS
+                    geoGPSManager.stopLocating();
+                    geoGPSManager.startLocating();
+                    ticksNoPositioning++;
+                    if (ticksNoPositioning>=2) {    // 1 minute with no positioning
+                        // handle this in appropriate screen
+                        ticksNoPositioning =0;
+                        geoGPSManager.onNoPosition();
+                    }
+                } else {
+                    // meOnMap is correct - with GPS coordinates
+                    // so save "me" in cloud
+                    GeoBean geo = new GeoBean();
+                    geo.setId(Long.valueOf(meOnMap.getId()));
+                    geo.setLat(meOnMap.getLat());
+                    geo.setLon(meOnMap.getLon());
+                    geo.setExtra(String.valueOf(new Date().getTime()));
+                    if (geoEndpointManager != null) {
+                        geoEndpointManager.saveGeo(geo);
+                        Log.d("LOG","...me saved in cloud...");
+                    }
+
+                    ticksNoPositioning = 0;
                 }
             }
 

@@ -2,6 +2,7 @@ package com.nordman.big.myfellowcompass;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -67,6 +68,7 @@ public class GeoEndpointManager {
             @Override
             protected GeoBean doInBackground(GeoBean... params) {
                 GeoBean geoBean = params[0];
+
 
                 try {
                     return geoApiService.insert(geoBean).execute();

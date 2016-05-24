@@ -12,4 +12,5 @@ public interface GeoGPSHandler {
 
     void onGPSError(int errorType, String errorMessage);
     void onGPSLocationChanged(Location location);
+    void onNoPosition();
 }

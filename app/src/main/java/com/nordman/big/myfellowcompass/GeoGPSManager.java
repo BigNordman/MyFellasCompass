@@ -160,6 +160,10 @@ public class GeoGPSManager {
         return azimuthDegree;
     }
 
+    public void onNoPosition(){
+        ((GeoGPSHandler) context).onNoPosition();
+    }
+
     public float[] getRotateDegrees() {
         float[] result;
         result = new float[2];

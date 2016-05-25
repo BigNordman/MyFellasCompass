@@ -144,6 +144,8 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
                 ((NavigationDrawerActivity) getActivity()).performNavigationDrawerItemClick(1);
             }
         });
+
+        setUpMapIfNeeded();
     }
 
     @Override

@@ -51,6 +51,29 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingLeft="10dp">
+            <ImageView
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:id="@+id/mapSend"
+                android:src="@drawable/send_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+
+                android:text="Send"
+                android:id="@+id/textView3"
+                android:textColor="@color/carbon_white" />
+
+        </LinearLayout>
+
 <!--
         <Button
             android:layout_width="wrap_content"

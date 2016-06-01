@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,6 +22,9 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.messenger.MessengerThreadParams;
+import com.facebook.messenger.MessengerUtils;
+import com.facebook.messenger.ShareToMessengerParams;
 import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.SendButton;
 import com.facebook.share.widget.ShareButton;
@@ -49,13 +53,9 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
     private Marker meMarker = null;
     private Marker himMarker = null;
     private ImageView personSelector = null;
-    public static final boolean ON = true;
-    public static final boolean OFF = false;
-
-    private static final String EXTRA_PROTOCOL_VERSION = "com.facebook.orca.extra.PROTOCOL_VERSION";
-    private static final String EXTRA_APP_ID = "com.facebook.orca.extra.APPLICATION_ID";
-    private static final int PROTOCOL_VERSION = 20150314;
     private static final int SHARE_TO_MESSENGER_REQUEST_CODE = 1;
+    private MessengerThreadParams mThreadParams;
+    private boolean mPicking;
 
     public ViewMapFragment() {
     }
@@ -145,7 +145,52 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
             }
         });
 
+        Intent intent = this.getActivity().getIntent();
+        if (Intent.ACTION_PICK.equals(intent.getAction())) {
+            mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+            mPicking = true;
+
+            // Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
+            // It will contain the metadata associated with the original content, if there was content.
+        }
+
+        ImageView imageSend = (ImageView)getActivity().findViewById(R.id.mapSend);
+        imageSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("LOG","...send button pressed...");
+                onMessengerButtonClicked();
+            }
+        });
+
         setUpMapIfNeeded();
+    }
+
+    private void onMessengerButtonClicked() {
+        // The URI can reference a file://, content://, or android.resource. Here we use
+        // android.resource for sample purposes.
+        Uri uri =
+                Uri.parse("android.resource://com.nordman.big.myfellowcompass/" + R.drawable.logo);
+
+        // Create the parameters for what we want to send to Messenger.
+        ShareToMessengerParams shareToMessengerParams =
+                ShareToMessengerParams.newBuilder(uri, "image/jpeg")
+                        .setMetaData("{ \"image\" : \"logo\" }")
+                        .build();
+
+        if (mPicking) {
+            // If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
+            // the content to Messenger.
+            MessengerUtils.finishShareToMessenger(this.getActivity(), shareToMessengerParams);
+        } else {
+            // Otherwise, we were launched directly (for example, user clicked the launcher icon). We
+            // initiate the broadcast flow in Messenger. If Messenger is not installed or Messenger needs
+            // to be upgraded, this will direct the user to the play store.
+            MessengerUtils.shareToMessenger(
+                    this.getActivity(),
+                    SHARE_TO_MESSENGER_REQUEST_CODE,
+                    shareToMessengerParams);
+        }
     }
 
     @Override

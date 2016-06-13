@@ -15,9 +15,9 @@
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
         <!--at home-->
-        <!--AIzaSyAeB6PCuacrxqylRIdJdijTV2A1-IgLHLo-->
+        AIzaSyAeB6PCuacrxqylRIdJdijTV2A1-IgLHLo
 
         <!--at work-->
-        AIzaSyBBbls1Bmaogzo1wCJoS8WBeKGB14BJ44s
+        <!--AIzaSyBBbls1Bmaogzo1wCJoS8WBeKGB14BJ44s-->
     </string>
 </resources>

@@ -14,5 +14,6 @@
     <dimen name="listview_row_title_size">16sp</dimen>
     <dimen name="listview_row_description_padding">16dp</dimen>
     <dimen name="listview_row_description_size">15sp</dimen>
+    <dimen name="widget_margin">8dp</dimen>
 
 </resources>

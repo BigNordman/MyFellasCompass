@@ -3,11 +3,13 @@ package com.nordman.big.myfellowcompass;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -145,17 +147,25 @@ public class SplashActivity extends AppCompatActivity {
     private void updateProfile() {
         Profile profile = Profile.getCurrentProfile();
 
+
+        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor ed = prefs.edit();
         if (profile != null) {
+            ed.putString("profileId", profile.getId());
+
             profilePictureView.setProfileId(profile.getId());
             continueButton.setVisibility(View.VISIBLE);
             GeoSingleton.getInstance().setProfileId(profile.getId());
             GeoSingleton.getInstance().setProfileName(profile.getName());
         } else {
+            ed.putString("profileId", null);
+
             profilePictureView.setProfileId(null);
             continueButton.setVisibility(View.INVISIBLE);
             GeoSingleton.getInstance().setProfileId(null);
             GeoSingleton.getInstance().setProfileName(null);
         }
+        ed.apply();
     }
 
     private void showContinue() {

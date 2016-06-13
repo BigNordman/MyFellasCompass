@@ -93,6 +93,8 @@ public class GeoEndpointManager {
     }
 
     public void getGeo(String id) {
+        if (id == null) return;
+
         class getGeoAsyncTask extends AsyncTask<String, Void, GeoBean>{
             private String errorMessage;
 

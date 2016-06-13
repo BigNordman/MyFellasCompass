@@ -1,5 +1,6 @@
 package com.nordman.big.myfellowcompass;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -7,12 +8,16 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,6 +38,7 @@ import java.util.TimerTask;
 
 public class SplashActivity extends AppCompatActivity {
     public static final long START_DELAY = 1500;
+    private static final int PERMISSION_ACCESS_FINE_LOCATION = 1;
 
     private ProfilePictureView profilePictureView;
     private CallbackManager fbCallbackManager;
@@ -100,6 +106,12 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 });
 
+        // Permissions for Android 6
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, PERMISSION_ACCESS_FINE_LOCATION);
+        }
+
 
         setContentView(R.layout.activity_splash);
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
@@ -146,6 +158,11 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+    private void showContinue() {
+
+    }
+
+
     public void onContinue(View view) {
 
         if (!Util.isOnline(this)) {
@@ -163,6 +180,28 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(0, 0);
         finish();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_ACCESS_FINE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Location permission granted!", Toast.LENGTH_SHORT).show();
+                    Log.d("LOG",".......Location permission granted");
+                } else {
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.permission_error)
+                            .setMessage(R.string.fine_location_permission_is_necessary)
+                            .setPositiveButton(R.string.ok, null)
+                            .show();
+                    continueButton.setVisibility(View.INVISIBLE);
+
+
+                    Toast.makeText(this, R.string.fine_location_permission_is_necessary, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
 }

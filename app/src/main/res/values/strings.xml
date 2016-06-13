@@ -50,5 +50,8 @@
     <string name="more_tan_month_ago">was here more than month ago</string>
     <string name="coordinates_are_unknown">Coordinates are unknown</string>
     <string name="please_check_gps">GPS coordinates are unknown. Please check if the GPS is enabled.</string>
+    <string name="fine_location_permission_is_necessary">Fine location permission is necessary</string>
+    <string name="permission_error">Not enough permission</string>
+
 
 </resources>

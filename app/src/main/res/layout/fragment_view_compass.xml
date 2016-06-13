@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dip"
+        android:layout_marginTop="10dip"
         android:padding="2dp"
         android:layout_gravity="center_horizontal|bottom"
         android:gravity="center_vertical|center_horizontal"
@@ -34,7 +34,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="60sp"
+            android:textSize="50sp"
             android:id="@+id/textDistance"
             android:textColor="@color/carbon_white"/>
         <TextView

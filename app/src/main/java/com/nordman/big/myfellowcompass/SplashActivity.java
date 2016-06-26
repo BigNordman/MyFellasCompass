@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +22,6 @@ import android.widget.Toast;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.internal.CallbackManagerImpl;
@@ -35,18 +32,13 @@ import com.facebook.login.widget.ProfilePictureView;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SplashActivity extends AppCompatActivity {
-    public static final long START_DELAY = 1500;
     private static final int PERMISSION_ACCESS_FINE_LOCATION = 1;
 
     private ProfilePictureView profilePictureView;
     private CallbackManager fbCallbackManager;
-    private ProfileTracker profileTracker;
     private ImageButton continueButton;
-    Timer delayTimer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +53,12 @@ public class SplashActivity extends AppCompatActivity {
                 md.update(signature.toByteArray());
                 Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
-        } catch (PackageManager.NameNotFoundException e) {
-
-        } catch (NoSuchAlgorithmException e) {
+        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
 
         }
 
         /* facebook login */
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        //FacebookSdk.sdkInitialize(getApplicationContext());
         fbCallbackManager = CallbackManager.Factory.create();
 
         LoginManager.getInstance().registerCallback(fbCallbackManager,
@@ -91,14 +81,6 @@ public class SplashActivity extends AppCompatActivity {
                         showAlert(R.string.login_error,R.string.something_went_wrong);
                     }
 
-                    private void showAlert() {
-                        new AlertDialog.Builder(SplashActivity.this)
-                                .setTitle(R.string.cancelled)
-                                .setMessage(R.string.permission_not_granted)
-                                .setPositiveButton(R.string.ok, null)
-                                .show();
-                    }
-
                     private void showAlert(int pTitleId, int pMessageId) {
                         new AlertDialog.Builder(SplashActivity.this)
                                 .setTitle(pTitleId)
@@ -117,11 +99,13 @@ public class SplashActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash);
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends");
+        if (loginButton != null) {
+            loginButton.setReadPermissions("user_friends");
+        }
 
         continueButton = (ImageButton) findViewById(R.id.continueButton);
 
-        profileTracker = new ProfileTracker() {
+        new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 updateProfile();
@@ -167,11 +151,6 @@ public class SplashActivity extends AppCompatActivity {
         }
         ed.apply();
     }
-
-    private void showContinue() {
-
-    }
-
 
     public void onContinue(View view) {
 

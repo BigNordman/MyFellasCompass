@@ -55,12 +55,20 @@ public class GeoSingleton {
     }
 
     public void clear() {
-        getGeoEndpointManager().destroy();
-        setGeoEndpointManager(null);
-        getGeoGPSManager().destroy();
-        setGeoGPSManager(null);
-        getPersonBearingManager().destroy();
-        setPersonBearingManager(null);
+        if (geoEndpointManager!=null) {
+            getGeoEndpointManager().destroy();
+            setGeoEndpointManager(null);
+        }
+
+        if (geoGPSManager!=null) {
+            getGeoGPSManager().destroy();
+            setGeoGPSManager(null);
+        }
+
+        if (personBearingManager!=null) {
+            getPersonBearingManager().destroy();
+            setPersonBearingManager(null);
+        }
         setMeOnMap(null);
         setHimOnMap(null);
         stopTimer();

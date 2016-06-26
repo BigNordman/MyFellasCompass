@@ -23,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SelectPerson2Activity extends com.blunderer.materialdesignlibrary.activities.ListViewActivity {

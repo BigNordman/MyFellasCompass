@@ -382,32 +382,37 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
 
             }
 
-            if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId() != null) {
-                float distance = GeoSingleton.getInstance().getPersonBearingManager().getDistance();
-                if (distance < 200) {
-                    zoomRate = 16.0f;
-                } else if (distance < 800) {
-                    zoomRate = 14.0f;
+            try {
+                if (GeoSingleton.getInstance().getPersonBearingManager().getPersonId() != null) {
+                    float distance = GeoSingleton.getInstance().getPersonBearingManager().getDistance();
+                    if (distance < 200) {
+                        zoomRate = 16.0f;
+                    } else if (distance < 800) {
+                        zoomRate = 14.0f;
+                    }
+                    else if (distance < 3500) {
+                        zoomRate = 12.0f;
+                    }
+                    else if (distance < 15000) {
+                        zoomRate = 10.0f;
+                    }
+                    else if (distance < 60000) {
+                        zoomRate = 8.0f;
+                    }
+                    else if (distance < 220000) {
+                        zoomRate = 6.0f;
+                    }
+                    else if (distance < 750000) {
+                        zoomRate = 4.0f;
+                    }
+                    else {
+                        zoomRate = 3.0f;
+                    }
                 }
-                else if (distance < 3500) {
-                    zoomRate = 12.0f;
-                }
-                else if (distance < 15000) {
-                    zoomRate = 10.0f;
-                }
-                else if (distance < 60000) {
-                    zoomRate = 8.0f;
-                }
-                else if (distance < 220000) {
-                    zoomRate = 6.0f;
-                }
-                else if (distance < 750000) {
-                    zoomRate = 4.0f;
-                }
-                else {
-                    zoomRate = 3.0f;
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
 
             try {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, zoomRate));

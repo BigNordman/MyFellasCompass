@@ -22,7 +22,7 @@ public class GeoEndpointManager {
     public GeoEndpointManager(Context context) {
         this.context = context;
         GeoBeanApi.Builder builder = new GeoBeanApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                .setRootUrl("https://myfellascompassbackend.appspot.com/_ah/api/");
+                .setRootUrl(context.getString(R.string.backend_url));
 
         geoApiService = builder.build();
     }

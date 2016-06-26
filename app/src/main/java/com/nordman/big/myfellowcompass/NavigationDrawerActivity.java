@@ -16,7 +16,6 @@ import com.blunderer.materialdesignlibrary.handlers.NavigationDrawerBottomHandle
 import com.blunderer.materialdesignlibrary.handlers.NavigationDrawerStyleHandler;
 import com.blunderer.materialdesignlibrary.handlers.NavigationDrawerTopHandler;
 import com.blunderer.materialdesignlibrary.models.Account;
-import com.facebook.appevents.AppEventsLogger;
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 
 public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrary.activities.NavigationDrawerActivity
@@ -194,13 +193,11 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
     public void onStart() {
         super.onStart();
         GeoSingleton.getInstance().startTimer();
-        AppEventsLogger.activateApp(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        AppEventsLogger.deactivateApp(this);
         GeoSingleton.getInstance().clear();
         Log.d("LOG","...onDestroy...");
     }

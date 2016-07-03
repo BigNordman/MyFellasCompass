@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.blunderer.materialdesignlibrary.handlers.ActionBarDefaultHandler;
@@ -144,16 +145,32 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
                 Toast toast = Toast.makeText(this.getApplicationContext(),
                         R.string.location_banned_by_friend, Toast.LENGTH_LONG);
                 toast.show();
+                mapFragment.setProgressBarVisibility(View.INVISIBLE);
+                compassFragment.setProgressBarVisibility(View.INVISIBLE);
+                GeoSingleton.getInstance().getPersonBearingManager().setPersonId(null);
+                GeoSingleton.getInstance().getPersonBearingManager().setPersonName(null);
+                GeoSingleton.getInstance().getPersonBearingManager().setGeoBean(null);
+            } else{
+                mapFragment.showHimOnMap();
+                compassFragment.setPersonInfo();
             }
 
 
-            mapFragment.showHimOnMap();
-            compassFragment.setPersonInfo();
         }
     }
 
     @Override
     public void onGeoEndpointError(int errorType, String errorMessage) {
+        if (errorType==GeoEndpointHandler.GET_ERROR) {
+            Toast toast = Toast.makeText(this.getApplicationContext(),
+                    R.string.location_is_unknown, Toast.LENGTH_LONG);
+            toast.show();
+            mapFragment.setProgressBarVisibility(View.INVISIBLE);
+            compassFragment.setProgressBarVisibility(View.INVISIBLE);
+            GeoSingleton.getInstance().getPersonBearingManager().setPersonId(null);
+            GeoSingleton.getInstance().getPersonBearingManager().setPersonName(null);
+            GeoSingleton.getInstance().getPersonBearingManager().setGeoBean(null);
+        }
 
     }
 

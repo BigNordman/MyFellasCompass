@@ -25,9 +25,6 @@ import com.facebook.HttpMethod;
 import com.facebook.messenger.MessengerThreadParams;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
-import com.facebook.share.widget.MessageDialog;
-import com.facebook.share.widget.SendButton;
-import com.facebook.share.widget.ShareButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -437,7 +434,7 @@ public class ViewMapFragment extends AFragment implements OnMapReadyCallback {
         Log.d("LOG","...onTest2()...");
     }
 
-    private void setProgressBarVisibility(int visibility)
+    protected void setProgressBarVisibility(int visibility)
     {
         if (getActivity()==null) return;
         getActivity().findViewById((R.id.imageProgressBar)).setVisibility(visibility);

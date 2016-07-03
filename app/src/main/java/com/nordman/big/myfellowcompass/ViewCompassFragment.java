@@ -349,7 +349,7 @@ public class ViewCompassFragment extends AFragment {
         //Log.d("LOG","...onGPSLocationChanged...");
     }
 
-    private void setProgressBarVisibility(int visibility)
+    protected void setProgressBarVisibility(int visibility)
     {
         if (getActivity()==null) return;
         getActivity().findViewById((R.id.imageProgressBar)).setVisibility(visibility);

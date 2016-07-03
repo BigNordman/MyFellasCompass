@@ -53,6 +53,7 @@
     <string name="fine_location_permission_is_necessary">Fine location permission is necessary</string>
     <string name="permission_error">Not enough permission</string>
     <string name="backend_url">https://myfellascompassbackend.appspot.com/_ah/api/</string>
+    <string name="location_is_unknown">GPS coordinates of your friend is unknown...</string>
 
 
 </resources>

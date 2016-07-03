@@ -54,6 +54,8 @@
     <string name="permission_error">Not enough permission</string>
     <string name="backend_url">https://myfellascompassbackend.appspot.com/_ah/api/</string>
     <string name="location_is_unknown">GPS coordinates of your friend is unknown...</string>
+    <string name="compass">Compass</string>
+    <string name="send">Send</string>
 
 
 </resources>

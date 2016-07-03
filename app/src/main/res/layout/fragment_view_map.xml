@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
 
-                android:text="Compass"
+                android:text="@string/compass"
                 android:id="@+id/textView2"
                 android:textColor="@color/carbon_white" />
 
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
 
-                android:text="Send"
+                android:text="@string/send"
                 android:id="@+id/textView3"
                 android:textColor="@color/carbon_white" />
 

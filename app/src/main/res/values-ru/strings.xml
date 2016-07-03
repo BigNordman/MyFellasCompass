@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">Find Friend</string>
+    <string name="facebook_app_id">1719838634939657</string>
+    <string name="facebook_user_info">%1$s : %2$s</string>
+    <string name="cancelled">Отменено</string>
+    <string name="permission_not_granted">Нет пользовательских разрешений на выполнение необходимых операций.</string>
+    <string name="ok">OK</string>
+    <string name="access_fine_location_required">Необходимо разрешение Точное местоположение.</string>
+    <string name="gps_diagnostics">Координаты = %1$s</string>
+    <string name="gps_provider_disabled">Провайдер %1$s недоступен.</string>
+    <string name="select_person">Выберите друга</string>
+    <string name="back">Назад</string>
+    <!--
+        <string name="select_friend">Select Friend</string>
+        <string name="buddy_location_unknown">Your buddy\'s location is currently unknown.</string>
+    -->
+    <string name="title_activity_maps">Карта</string>
+
+
+    <!--
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_activitysplash">ActivitySplash</string>
+    <string name="continue_button">Continue</string>
+    -->
+
+    <string name="fragment_map">Карта</string>
+    <string name="he_was_here">"был здесь "</string>
+    <string name="fragment_compass">Компас</string>
+    <string name="map">Карта</string>
+    <string name="distance_to_person">РАССТОЯНИЕ ДО ДРУГА</string>
+    <string name="distance_value">%1$s км</string>
+    <string name="facebook_login_cancelled">Логин в Facebook отменен.</string>
+    <string name="connection_error">Ошибка подключения</string>
+    <string name="connection_is_not_available">Нет доступа в интернет</string>
+    <string name="login_error">Ошибка входа</string>
+    <string name="something_went_wrong">Что-то пошло не так</string>
+    <string name="gps_mode_required">Необходим \nGPS режим</string>
+    <string name="magnet_rotation">…магнитный датчик…</string>
+    <string name="keep_on_moving">Продолжайте \nдвижение…</string>
+    <string name="invite_friend">Пригласить друга</string>
+    <string name="fb_app_link">https://fb.me/1750197465237107</string>
+    <string name="location_banned_by_friend">Похоже, Ваш друг не хочет, чтобы кто-то знал о его местонахождении.</string>
+    <string name="destination_undefined">Направление неопределено</string>
+    <string name="right_now">здесь прямо сейчас</string>
+    <string name="minutes_ago">был(а) здесь %1$d минут назад</string>
+    <string name="hours_ago">был(а) здесь %1$d часов назад</string>
+    <string name="days_ago">был(а) здесь %1$d дней назад</string>
+    <string name="more_tan_month_ago">был(а) здесь больше месяца назад</string>
+    <string name="coordinates_are_unknown">Координаты неизвестны</string>
+    <string name="please_check_gps">GPS координаты неизвестны. Проверьте, включен ли GPS.</string>
+    <string name="fine_location_permission_is_necessary">Необходимо разрешение Точное местоположение.</string>
+    <string name="permission_error">Недостаточно разрешений</string>
+    <string name="backend_url">https://myfellascompassbackend.appspot.com/_ah/api/</string>
+    <string name="location_is_unknown">GPS координаты вашего друга неизвестны...</string>
+    <string name="compass">Компасс</string>
+    <string name="send">Чат</string>
+
+
+</resources>

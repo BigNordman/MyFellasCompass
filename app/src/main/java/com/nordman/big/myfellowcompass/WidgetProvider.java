@@ -27,6 +27,7 @@ import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Sergey on 13.06.2016.
@@ -36,6 +37,7 @@ public class WidgetProvider extends AppWidgetProvider {
     private ComponentName appWidget;
     private LightGPSManager gpsMgr;
     private LightEndpointManager endpointMgr;
+    private boolean isLocated = true;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -48,7 +50,13 @@ public class WidgetProvider extends AppWidgetProvider {
             int widgetId = appWidgetIds[i];
 
             setCurLocation(context);
+            isLocated = false;
             remoteViews.setImageViewResource(R.id.actionButton, R.drawable.btn_marker_checked);
+
+            // асинхронная задача, чтобы через 10 секунд проверить, определены ли координаты
+            PauseTask task = new PauseTask();
+            //task.execute();
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             Intent intent = new Intent(context, WidgetProvider.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -115,6 +123,7 @@ public class WidgetProvider extends AppWidgetProvider {
         (AppWidgetManager.getInstance(endpointMgr.context)).updateAppWidget( appWidget, remoteViews );
 
         Log.d("LOG","... сохранили местоположение...");
+        isLocated = true;
         endpointMgr = null;
     }
 
@@ -239,5 +248,34 @@ public class WidgetProvider extends AppWidgetProvider {
             new saveGeoAsyncTask().execute(geoBean);
         }
 
+    }
+
+    // проверяем через 10 секунд после начала определения координат.
+    // если координаты неопределены - красим маркер в красное
+    class PauseTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            Log.d("LOG","...10 секунд прошло...isLocated=" + isLocated);
+            if (!isLocated) {
+                try {
+                    appWidget = new ComponentName(gpsMgr.context, WidgetProvider.class);
+                    remoteViews = new RemoteViews(gpsMgr.context.getPackageName(), R.layout.widget);
+                    remoteViews.setImageViewResource(R.id.actionButton, R.drawable.btn_marker_err);
+                    (AppWidgetManager.getInstance(gpsMgr.context)).updateAppWidget(appWidget, remoteViews);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

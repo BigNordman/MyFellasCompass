@@ -3,7 +3,9 @@ package com.nordman.big.myfellowcompass;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,17 +63,6 @@ public class SelectPerson2Activity extends com.blunderer.materialdesignlibrary.a
     @Override
     public ListAdapter getListAdapter() {
         return new MyAdapter(this, R.layout.listview_row, friends);
-        /*
-        return new ArrayAdapter<>(
-                this,
-                R.layout.listview_row,
-                new ArrayList<>(Arrays.asList(
-                        "item 1",
-                        "item 2",
-                        "item 3"
-                ))
-        );
-        */
     }
 
     @Override
@@ -107,6 +98,13 @@ public class SelectPerson2Activity extends com.blunderer.materialdesignlibrary.a
         intent.putExtra("id", ((FbRowItem)adapterView.getItemAtPosition(position)).id);
         intent.putExtra("name", ((FbRowItem)adapterView.getItemAtPosition(position)).name);
         setResult(RESULT_OK, intent);
+
+        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString("personId", ((FbRowItem)adapterView.getItemAtPosition(position)).id);
+        ed.putString("personName", ((FbRowItem)adapterView.getItemAtPosition(position)).name);
+        ed.apply();
+
         finish();
 
     }

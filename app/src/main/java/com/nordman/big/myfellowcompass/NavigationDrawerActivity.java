@@ -3,8 +3,10 @@ package com.nordman.big.myfellowcompass;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -56,6 +58,18 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
             GeoSingleton.getInstance().setPersonBearingManager(new PersonBearingManager(this));
             Log.d("LOG", "...PersonBearingManager created...");
         }
+
+        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getString("personId", "").equals("")) {
+            GeoSingleton.getInstance().getPersonBearingManager().setPersonId(prefs.getString("personId", ""));
+            GeoSingleton.getInstance().getPersonBearingManager().setPersonName(prefs.getString("personName", ""));
+            GeoSingleton.getInstance().getGeoEndpointManager().getGeo(GeoSingleton.getInstance().getPersonBearingManager().getPersonId());
+
+            PersonOnMap him = new PersonOnMap(prefs.getString("personId", ""),prefs.getString("personName", ""));
+            GeoSingleton.getInstance().setHimOnMap(him);
+        }
+
+        Log.d("LOG", "person = " + prefs.getString("personId", "") + " - " + prefs.getString("personName", ""));
 
     }
 

@@ -39,7 +39,7 @@
     <string name="fine_location_permission_is_necessary">Необходимо разрешение Точное местоположение.</string>
     <string name="permission_error">Недостаточно разрешений</string>
     <string name="backend_url">https://myfellascompassbackend.appspot.com/_ah/api/</string>
-    <string name="location_is_unknown">GPS координаты вашего друга неизвестны...</string>
+    <string name="location_is_unknown">GPS координаты вашего друга неизвестны…</string>
     <string name="compass">Компасс</string>
-    <string name="send">Чат</string>
+    <string name="send">Сообщение</string>
 </resources>

@@ -1,7 +1,9 @@
 package com.nordman.big.myfellowcompass;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
@@ -83,11 +85,21 @@ public class PersonBearingManager {
     public float getDistance(){
         Location myLocation = getMyLocation();
         Location personLocation = getPersonLocation();
+        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (myLocation == null || personLocation == null) return -1;
+        if (myLocation == null || personLocation == null) {
+            return prefs.getFloat("personDist", -1);
+        }
 
-        //Log.d("LOG","...PersonBearingManager.getDistance = " + myLocation.distanceTo(personLocation));
-        return myLocation.distanceTo(personLocation);
+        //Log.d("LOG","ZZZ...PersonBearingManager.getDistance = " + myLocation.distanceTo(personLocation));
+
+        float dist = myLocation.distanceTo(personLocation);
+
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putFloat("personDist",dist);
+        ed.apply();
+
+        return dist;
     }
 
     public Location getMyLocation() {

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.nordman.big.myfellowcompass.backend.geoBeanApi.model.GeoBean;
 public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrary.activities.NavigationDrawerActivity
         implements GeoEndpointHandler, GeoGPSHandler{
 
+    private final static String APP_PNAME = "com.nordman.big.myfellowcompass";
     ViewMapFragment mapFragment;
     public ViewCompassFragment compassFragment;
 
@@ -120,7 +122,12 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
     @Override
     public NavigationDrawerBottomHandler getNavigationDrawerBottomHandler() {
         return new NavigationDrawerBottomHandler(this)
-                .addHelpAndFeedback(null);
+                .addHelpAndFeedback(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + APP_PNAME)));
+                    }
+                });
     }
 
     @Override

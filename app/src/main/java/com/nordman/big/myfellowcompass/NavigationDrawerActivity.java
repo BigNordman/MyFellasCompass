@@ -197,7 +197,8 @@ public class NavigationDrawerActivity extends com.blunderer.materialdesignlibrar
 
     @Override
     public void onGPSError(int errorType, String errorMessage) {
-
+        Toast toast = Toast.makeText(this.getApplicationContext(), errorMessage, Toast.LENGTH_LONG);
+        toast.show();
     }
 
     @Override

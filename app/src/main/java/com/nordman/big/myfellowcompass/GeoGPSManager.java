@@ -139,10 +139,14 @@ public class GeoGPSManager {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ((GeoGPSHandler) context).onGPSError(GeoGPSHandler.PERMISSION_ERROR, context.getString(R.string.access_fine_location_required));
         } else {
-            Location location = locationManager.getLastKnownLocation(gpsProvider);
-            ((GeoGPSHandler) context).onGPSLocationChanged(location);
+            if (gpsProvider==null) {
+                ((GeoGPSHandler) context).onGPSError(GeoGPSHandler.PROVIDER_DISABLED_ERROR, context.getString(R.string.coordinates_are_unknown));
+            } else {
+                Location location = locationManager.getLastKnownLocation(gpsProvider);
+                ((GeoGPSHandler) context).onGPSLocationChanged(location);
 
-            locationManager.requestLocationUpdates(gpsProvider, 3000, 3, locationListener);
+                locationManager.requestLocationUpdates(gpsProvider, 3000, 3, locationListener);
+            }
         }
     }
 
